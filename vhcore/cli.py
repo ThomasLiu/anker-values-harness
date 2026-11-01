@@ -15,29 +15,70 @@ from .markdown import Artifact
 from .render import render_prompt
 
 
+class InputError(RuntimeError):
+    """输入文件本身有问题（编码、路径），不是配置错。"""
+
+
+def _force_utf8_stdio():
+    """把 stdout/stderr 钉死成 UTF-8。
+
+    Windows 上 stdout 被重定向（管道、CI、agent 抓输出）时用的是本地代码页，
+    英文环境的 cp437/ascii 编码不出中文，print 会直接抛 UnicodeEncodeError
+    把整个命令干掉。控制台场景本来就是 UTF-8，重设无害。
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
+
+
+def _read_text(path: Path) -> str:
+    """读产出文件，容忍 BOM 与 GBK。
+
+    中文 Windows 的编辑器默认存 GB18030 是常态，硬解 UTF-8 会让 lint
+    吐一坨栈。降级顺序：UTF-8(含 BOM) → GB18030 → 报错说人话。
+    """
+    data = path.read_bytes()
+    try:
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        pass
+    try:
+        text = data.decode("gb18030")
+    except UnicodeDecodeError as e:
+        raise InputError(
+            f"无法解码 {path}（既不是 UTF-8 也不是 GBK）：{e.reason}。"
+            "请把文件另存为 UTF-8。"
+        ) from e
+    print(f"提示：{path} 是 GBK 编码，已按 GB18030 读取；建议另存为 UTF-8。", file=sys.stderr)
+    return text
+
+
 def _load(args):
     root = Path(args.root).expanduser().resolve() if getattr(args, "root", None) else None
     return cfgmod.load(root)
 
 
-def _print_findings(stage: str, path: str, findings):
+def _print_findings(stage: str, path: str, findings, out=None):
+    out = out or sys.stdout
     blocking = [f for f in findings if f.blocking_fail]
     warns = [f for f in findings if not f.ok and not f.skipped and f.severity != "blocking"]
-    print(f"\n{stage}  {path}")
-    print("-" * 60)
+    print(f"\n{stage}  {path}", file=out)
+    print("-" * 60, file=out)
     for f in findings:
         if f.skipped:
             continue
         if f.ok:
-            print(f"  ok    {f.rule}  {f.detail}")
+            print(f"  ok    {f.rule}  {f.detail}", file=out)
         else:
             tag = "blocking" if f.severity == "blocking" else "warning"
-            print(f"  FAIL  [{tag}] {f.rule}")
-            print(f"        {f.detail}")
+            print(f"  FAIL  [{tag}] {f.rule}", file=out)
+            print(f"        {f.detail}", file=out)
             if f.fix:
-                print(f"        fix: {f.fix}")
-    print("-" * 60)
-    print(f"结果：{len(blocking)} blocking 失败，{len(warns)} warning")
+                print(f"        fix: {f.fix}", file=out)
+    print("-" * 60, file=out)
+    print(f"结果：{len(blocking)} blocking 失败，{len(warns)} warning", file=out)
     return blocking
 
 
@@ -56,7 +97,7 @@ def cmd_prompt(args):
     cfg = _load(args)
     text = render_prompt(cfg, args.stage, task=args.task, brief=args.brief)
     if args.out:
-        Path(args.out).write_text(text, encoding="utf-8")
+        Path(args.out).write_text(text, encoding="utf-8", newline="\n")
         print(f"已写入 {args.out}（{len(text.splitlines())} 行）", file=sys.stderr)
     else:
         print(text)
@@ -64,7 +105,7 @@ def cmd_prompt(args):
 
 
 def _run_lint(cfg, stage, path, log=True, task=None):
-    art = Artifact(Path(path).read_text(encoding="utf-8"), str(path))
+    art = Artifact(_read_text(Path(path)), str(path))
     findings = checksmod.run(cfg.rules(stage), art)
     if log:
         tel.record(cfg.root, stage, str(path), findings, task=task)
@@ -77,8 +118,14 @@ def cmd_lint(args):
     if not path.exists():
         print(f"文件不存在：{path}", file=sys.stderr)
         return 2
+    if path.is_dir():
+        print(f"这是一个目录，不是产出文件：{path}", file=sys.stderr)
+        return 2
     findings = _run_lint(cfg, args.stage, path, log=not args.no_log, task=args.task)
-    blocking = _print_findings(args.stage, str(path), findings)
+    # --json 是给机器读的，人读的报告必须让路到 stderr，否则 stdout 不是合法 JSON
+    blocking = _print_findings(
+        args.stage, str(path), findings, out=sys.stderr if args.json else None
+    )
 
     if args.json:
         print(json.dumps([f.as_dict() for f in findings], ensure_ascii=False, indent=2))
@@ -89,6 +136,9 @@ def cmd_lint(args):
 def cmd_lint_all(args):
     cfg = _load(args)
     path = Path(args.file)
+    if not path.is_file():
+        print(f"文件不存在：{path}", file=sys.stderr)
+        return 2
     worst = 0
     for sid in cfg.stages:
         findings = _run_lint(cfg, sid, path, log=not args.no_log)
@@ -97,26 +147,63 @@ def cmd_lint_all(args):
     return worst
 
 
+VALUE_LABELS = (
+    ("first_principles", "第一性"),
+    ("extremeness", "求极致"),
+    ("co_growth", "共成长"),
+)
+
+
+def _print_critic(rep):
+    c = rep["critic"]
+    if not c["runs"]:
+        print("\ncritic 评分：暂无。跑完评审后用 `vh critique <file> --record <score.json>` 回收。")
+        return
+    print(f"\ncritic 评分（{c['runs']} 份）：")
+    for key, label in VALUE_LABELS:
+        v = c["means"].get(key)
+        print(f"  {label:6s} {v if v is not None else '—'} / 3")
+    rate = c["silent_downgrade_rate"]
+    if rate is not None:
+        print(f"  静默降级 {rate * 100:.0f}%")
+    for v, n in c["verdicts"].items():
+        print(f"  {v}：{n} 份")
+
+
 def cmd_report(args):
     cfg = _load(args)
-    rep = tel.report(cfg.root)
+    if args.export:
+        n = tel.export(cfg.root, Path(args.export))
+        print(f"已导出 {n} 条记录 -> {args.export}")
+        return 0
+
+    src = Path(args.source).expanduser() if args.source else None
+    rep = tel.report(cfg.root, source=src)
     if args.json:
         print(json.dumps(rep, ensure_ascii=False, indent=2))
         return 0
+
+    if src:
+        print(f"数据源：{src}")
     print(f"总 lint 次数：{rep['runs']}")
-    if not rep["runs"]:
+    if rep["runs"]:
+        print("\n各阶段通过率：")
+        for sid, st in rep["by_stage"].items():
+            print(f"  {sid:12s} {st['passed']}/{st['runs']}  {st['pass_rate']*100:5.1f}%")
+        print("\n最常被拦的规则：")
+        for row in rep["rule_fails"][:8]:
+            print(f"  {row['fails']:3d} 次  {row['rule']}")
+        if rep["recent_failures"]:
+            print("\n最近失败：")
+            for r in rep["recent_failures"]:
+                print(
+                    f"  {r['ts']}  {r['stage']:12s} {r['artifact']}  "
+                    f"-> {', '.join(r['blocking'])}"
+                )
+    else:
         print("（还没有数据。跑一次 `vh lint` 就会开始记录。）")
-        return 0
-    print("\n各阶段通过率：")
-    for sid, st in rep["by_stage"].items():
-        print(f"  {sid:12s} {st['passed']}/{st['runs']}  {st['pass_rate']*100:5.1f}%")
-    print("\n最常被拦的规则：")
-    for row in rep["rule_fails"][:8]:
-        print(f"  {row['fails']:3d} 次  {row['rule']}")
-    if rep["recent_failures"]:
-        print("\n最近失败：")
-        for r in rep["recent_failures"]:
-            print(f"  {r['ts']}  {r['stage']:12s} {r['artifact']}  -> {', '.join(r['blocking'])}")
+
+    _print_critic(rep)
     return 0
 
 
@@ -127,7 +214,23 @@ def cmd_critique(args):
     if not Path(args.file).exists():
         print(f"文件不存在：{args.file}", file=sys.stderr)
         return 2
-    body = Path(args.file).read_text(encoding="utf-8")
+
+    # 回收模式：critic 已经在独立上下文里跑完了，这里只把结果写进遥测
+    if args.record:
+        try:
+            score = json.loads(_read_text(Path(args.record)))
+        except json.JSONDecodeError as e:
+            print(f"评分文件不是合法 JSON：{e}", file=sys.stderr)
+            return 2
+        rec = tel.record_critic(cfg.root, args.file, score)
+        print(
+            f"已记录 {args.file}\n"
+            f"  第一性 {rec.get('first_principles')} / 求极致 {rec.get('extremeness')} "
+            f"/ 共成长 {rec.get('co_growth')}  静默降级={rec.get('silent_downgrade')}"
+        )
+        return 0
+
+    body = _read_text(Path(args.file))
     print(render_critic(cfg, cfg.root))
     print("\n---\n")
     print("# 待评产出\n")
@@ -188,7 +291,69 @@ def cmd_selftest(args):
     return 0
 
 
+def cmd_promote(args):
+    """把一次真实逃逸沉淀成回归用例。
+
+    只接受「确实被这条规则拦下」的产出。拦不住的产出进 bench 只会制造
+    假安全感——selftest 全绿，但什么都没验证。
+    """
+    cfg = _load(args)
+    src = Path(args.file)
+    if not src.exists():
+        print(f"文件不存在：{src}", file=sys.stderr)
+        return 2
+
+    rule = cfg.rule(args.rule)
+    stage = args.stage or rule["stage"][0]
+
+    findings = _run_lint(cfg, stage, src, log=False)
+    mine = [f for f in findings if f.rule == rule["id"]]
+    if not mine:
+        print(f"拒绝：{rule['id']} 不在 {stage} 阶段。", file=sys.stderr)
+        return 2
+    if mine[0].ok or mine[0].skipped:
+        state = "跳过（触发条件没命中）" if mine[0].skipped else "通过"
+        print(
+            f"拒绝沉淀：{rule['id']} 在 {stage} 阶段对 {src} 是「{state}」，没拦住。\n"
+            f"拦不住的产出进 bench 只会制造假安全感。",
+            file=sys.stderr,
+        )
+        return 1
+
+    dest_dir = cfg.root / "bench" / "negative"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    base = f"{stage}-{rule['id'].replace('.', '-')}"
+    dest = dest_dir / f"{base}.md"
+    n = 2
+    while dest.exists():
+        dest = dest_dir / f"{base}-{n}.md"
+        n += 1
+    dest.write_text(_read_text(src), encoding="utf-8", newline="\n")
+
+    cases = cfg.root / "bench" / "cases.toml"
+    before = cases.read_text(encoding="utf-8")
+    with cases.open("a", encoding="utf-8") as fh:
+        fh.write(
+            f"\n# 由 vh promote 沉淀，来源：{src.name}\n"
+            f"[[case]]\n"
+            f'name = "neg/{dest.stem}"\n'
+            f'stage = "{stage}"\n'
+            f'file = "bench/negative/{dest.name}"\n'
+            f'expect = "fail"\n'
+            f'expect_rules = ["{rule["id"]}"]\n'
+        )
+    print(f"已沉淀 -> bench/negative/{dest.name}")
+
+    rc = cmd_selftest(args)
+    if rc != 0:
+        cases.write_text(before, encoding="utf-8")
+        dest.unlink()
+        print("新用例没通过 selftest，已回滚。", file=sys.stderr)
+    return rc
+
+
 def main(argv=None):
+    _force_utf8_stdio()
     p = argparse.ArgumentParser(
         prog="vh",
         description="把价值观编译成 agent 可执行的 gate / rubric / telemetry",
@@ -221,21 +386,33 @@ def main(argv=None):
 
     s = sub.add_parser("report", help="看价值观漂移指标")
     s.add_argument("--json", action="store_true")
+    s.add_argument("--from", dest="source", help="从归档文件读取，如 eval/telemetry/r2.jsonl")
+    s.add_argument("--export", help="把当前 telemetry 归档到指定路径")
     s.set_defaults(func=cmd_report)
 
-    s = sub.add_parser("critique", help="渲染独立 critic 的评审 prompt")
+    s = sub.add_parser("critique", help="渲染独立 critic 的评审 prompt，或回收评分")
     s.add_argument("file")
     s.add_argument("--value", help="附加某个价值观的 rubric")
+    s.add_argument("--record", help="critic 返回的评分 JSON 文件，写入遥测后返回")
     s.set_defaults(func=cmd_critique)
 
     s = sub.add_parser("selftest", help="跑基准样本，验证检查器本身有效")
     s.set_defaults(func=cmd_selftest)
+
+    s = sub.add_parser("promote", help="把一次真实逃逸沉淀为回归用例")
+    s.add_argument("file")
+    s.add_argument("rule", help="应该拦住它的规则 id，如 ex.redteam")
+    s.add_argument("--stage", help="默认取规则声明的第一个阶段")
+    s.set_defaults(func=cmd_promote)
 
     args = p.parse_args(argv)
     try:
         return args.func(args)
     except cfgmod.ConfigError as e:
         print(f"配置错误：{e}", file=sys.stderr)
+        return 2
+    except InputError as e:
+        print(f"输入错误：{e}", file=sys.stderr)
         return 2
 
 

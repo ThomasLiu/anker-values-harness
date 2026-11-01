@@ -1,0 +1,98 @@
+name: vh
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # POSIX 路径：./vh 直接跑，验证 shebang + 执行位没被换行搞坏
+  posix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 配置可加载
+        run: ./vh stages
+
+      - name: 检查器自检（正例不误报，反例不漏报）
+        run: ./vh selftest
+
+      - name: 正例必须全过
+        run: |
+          set -e
+          for f in bench/positive/*.md; do
+            base=$(basename "$f")
+            case "$base" in
+              pre_task*)    stage=pre_task ;;
+              pre_deliver*) stage=pre_deliver ;;
+              post_task*)   stage=post_task ;;
+              *) echo "无法从文件名判定阶段: $f"; exit 1 ;;
+            esac
+            ./vh lint "$stage" "$f" --no-log
+          done
+
+      - name: GBK 编码的产出也能读（中文 Windows 的默认保存格式）
+        run: |
+          iconv -f utf-8 -t gb18030 bench/positive/pre_task-good.md > /tmp/gbk.md
+          ./vh lint pre_task /tmp/gbk.md --no-log
+
+      - name: 归档数据可读
+        run: ./vh report --from eval/telemetry/r1-r2.jsonl
+
+  # Windows 路径：没有 shebang、没有执行位、默认代码页不是 UTF-8
+  # 这里用 PowerShell（Windows 用户没装 Git Bash 时的默认情况）
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 配置可加载
+        run: python vh.py stages
+
+      - name: 检查器自检
+        run: python vh.py selftest
+
+      - name: 正例必须全过
+        run: |
+          Get-ChildItem bench/positive/*.md | ForEach-Object {
+            $name = $_.Name
+            $stage = switch -Wildcard ($name) {
+              'pre_task*'    { 'pre_task' }
+              'pre_deliver*' { 'pre_deliver' }
+              'post_task*'   { 'post_task' }
+              default        { Write-Error "无法从文件名判定阶段: $name"; exit 1 }
+            }
+            python vh.py lint $stage "$($_.FullName)" --no-log
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "正例被误报: $name"
+              exit 1
+            }
+          }
+
+      - name: GBK 编码的产出也能读
+        run: |
+          $src = Get-Content -Raw -Encoding UTF8 bench/positive/pre_task-good.md
+          $gbk = [System.Text.Encoding]::GetEncoding(936)
+          [System.IO.File]::WriteAllText("$env:RUNNER_TEMP\gbk.md", $src, $gbk)
+          python vh.py lint pre_task "$env:RUNNER_TEMP\gbk.md" --no-log
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: 归档数据可读
+        run: python vh.py report --from eval/telemetry/r1-r2.jsonl
+
+      - name: vh.cmd 入口可用
+        run: |
+          .\vh.cmd stages
+          if ($LASTEXITCODE -ne 0) { exit 1 }

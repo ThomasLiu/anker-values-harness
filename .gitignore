@@ -3,3 +3,7 @@ __pycache__/
 .vh/
 .venv/
 .DS_Store
+
+# agent 会话数据，不进库
+.workbuddy-ai/
+.claude/settings.local.json

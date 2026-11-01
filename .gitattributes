@@ -1,0 +1,14 @@
+# 归一化换行，避免 Windows 上 autocrlf 把脚本改成 CRLF
+* text=auto
+
+# POSIX 入口靠 shebang 执行，CRLF 会让 env 找不到解释器（报 python3\r: No such file）
+vh text eol=lf
+*.py text eol=lf
+
+# .cmd 必须 CRLF，cmd.exe 对纯 LF 的批处理容错很差
+*.cmd text eol=crlf
+
+# 内容文件统一 LF：lint 靠行解析，跨平台保持一致更容易复现
+*.md text eol=lf
+*.toml text eol=lf
+*.jsonl text eol=lf

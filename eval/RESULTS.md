@@ -76,7 +76,9 @@ OPEN 组 6 个 agent 里，有 4 个明确汇报「我先读了 `values.toml` �
 ## 复现
 
 ```bash
-./vh selftest                      # 12 个基准用例，验证检查器本身
-ls eval/runs/r1 eval/runs/r2       # 原始产出
-./vh report                        # 遥测：43 次 lint 的通过率与被拦规则
+./vh selftest                                  # 13 个基准用例，验证检查器本身
+ls eval/runs/r1 eval/runs/r2                   # 原始产出
+./vh report --from eval/telemetry/r1-r2.jsonl  # 43 次 lint 的通过率与被拦规则
 ```
+
+注意第三行必须带 `--from`：`.vh/` 是本地运行时数据、不进版本库，直接跑 `./vh report` 在 clone 下来是空的。

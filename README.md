@@ -36,18 +36,25 @@ telemetry（观测层）  vh report            看价值观有没有漂移
 
 ## 快速开始
 
-零依赖，Python 3.11+（用到 `tomllib`）。
+零依赖，Python 3.11+（用到 `tomllib`）。macOS / Linux / Windows 都能跑。
 
 ```bash
 git clone git@github.com:ThomasLiu/anker-values-harness.git
 cd anker-values-harness
 
-./vh stages                                  # 看有哪些阶段和规则
-./vh prompt pre_task --task "帮我写触达文案"   # 拿任务前的 gate
-./vh lint pre_task 拆解卡.md                  # 检查产出，exit 0 才放行
-./vh report                                  # 看指标
-./vh selftest                                # 验证检查器本身有效
+python vh.py stages                                    # 看有哪些阶段和规则
+python vh.py prompt pre_task --task "帮我写触达文案"     # 拿任务前的 gate
+python vh.py lint pre_task 拆解卡.md                    # 检查产出，exit 0 才放行
+python vh.py report                                    # 看指标
+python vh.py selftest                                  # 验证检查器本身有效
+python vh.py report --from eval/telemetry/r1-r2.jsonl  # 从归档复现历史数据
+python vh.py promote 逃逸产出.md ex.redteam             # 把一次逃逸沉淀成回归用例
+python vh.py critique 交付稿.md --record score.json     # 回收 critic 评分
 ```
+
+`python vh.py` 是三个平台通用的写法。偷懒的话 POSIX 用 `./vh`，Windows 用 `.\vh`（走 `vh.cmd`），两者都只是转发到 `vh.py`。
+
+`.vh/` 是运行时数据，不进版本库；实验用的遥测归档在 `eval/telemetry/`，那份进库——否则 clone 下来所有数字都不可复现。
 
 接到任何 agent 上的最小用法：
 
@@ -58,6 +65,50 @@ cd anker-values-harness
 ```
 
 lint 非 0 就返工。绕过一次，这套 harness 就废了。
+
+## 接到 Claude Code
+
+仓库里已经放好接线，clone 下来用 `claude` 打开就生效，不用额外配置：
+
+| 文件 | 作用 |
+|---|---|
+| `CLAUDE.md` | 三阶段 SOP，Claude Code 自动读进上下文 |
+| `.claude/agents/vh-critic.md` | 独立评审 subagent，不共享主 agent 上下文 |
+
+注意 `CLAUDE.md` 是**软约束**：它让 agent 知道该跑 gate，但拦不住 agent 跳过。要变成硬门禁，得挂 hook——在 `.claude/settings.json` 里加：
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python vh.py lint-all \"$CLAUDE_FILE_PATHS\" --no-log"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+默认**没有**装这个 hook。原因是它会对每一次文件写入触发，轻任务上纯属噪音——DESIGN.md 里写过，「给每个任务都套全套 gate 的后果是 harness 被关掉」。等三阶段流程跑顺了再考虑上硬门禁。
+
+## 跨平台
+
+三处平台差异已经处理掉，Windows 上不用改任何东西：
+
+| 差异 | 处理 |
+|---|---|
+| 没有 shebang / 执行位 | `vh.py` 是主入口，`vh`（POSIX）和 `vh.cmd`（Windows）都转发到它 |
+| 控制台代码页不是 UTF-8 | 启动时把 stdout/stderr 钉成 UTF-8，重定向到管道也不会崩 |
+| 编辑器存 GBK / 带 BOM | 读产出时按 UTF-8 → GB18030 降级，并提示建议另存 UTF-8 |
+| autocrlf 把脚本改成 CRLF | `.gitattributes` 强制 `vh` / `*.py` 用 LF，`*.cmd` 用 CRLF |
+
+CI 同时跑 `ubuntu-latest` 和 `windows-latest`，两边都必须过。
 
 ## 规则一览
 
@@ -109,7 +160,10 @@ evaluator/critic.md  独立评审 prompt（不共享上下文，防自我一致�
 bench/               正例/反例基准，selftest 用
 scenarios/           业务场景用例
 eval/                A/B 实测记录
+eval/telemetry/      归档遥测，report --from 读它
 docs/DESIGN.md       设计取舍与已知缺陷
+docs/ROADMAP.md      缺口清单与分批次方案
+.github/workflows/   CI：selftest + 正例全过 + 配置校验
 ```
 
 ## 实测
@@ -128,7 +182,12 @@ docs/DESIGN.md       设计取舍与已知缺陷
 2. **规则透明会被反向利用。** 规则可见组里 4/6 个 agent 汇报「我先读了 values.toml 和检查器源码，照着写」。真实部署应把配置和业务仓库分离（`VH_ROOT` 指到仓库外），agent 只看 `vh prompt` 输出。
 3. **没解决的是「结论确定度高于证据强度」。** critic 在三个场景里独立给出同一个判断。为此加了 `fp.number-provenance`，但尚未经过新一轮验证。
 
-完整数据、被修掉的 7 个解析 bug、复现命令见 [`eval/RESULTS.md`](eval/RESULTS.md)。
+完整数据、被修掉的 7 个解析 bug 见 [`eval/RESULTS.md`](eval/RESULTS.md)。原始数字可直接复现：
+
+```bash
+./vh report --from eval/telemetry/r1-r2.jsonl   # 43 次 lint 的通过率与被拦规则
+./vh selftest                                    # 13 个基准用例
+```
 
 ## 已知边界
 

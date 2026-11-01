@@ -85,3 +85,11 @@ stage = "pre_deliver"
 file = "bench/negative/pre_deliver-no-provenance.md"
 expect = "fail"
 expect_rules = ["fp.number-provenance"]
+
+# 由 vh promote 沉淀，来源：escape-redteam.md
+[[case]]
+name = "neg/pre_deliver-ex-redteam"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-ex-redteam.md"
+expect = "fail"
+expect_rules = ["ex.redteam"]

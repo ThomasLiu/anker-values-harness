@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""values-harness CLI 入口。零依赖，直接 ./vh 即可运行。"""
+"""POSIX 入口。真正的逻辑在 vh.py——Windows 上直接跑那个，不维护两份。"""
 
 import os
+import runpy
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from vhcore.cli import main  # noqa: E402
-
-if __name__ == "__main__":
-    sys.exit(main())
+TARGET = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vh.py")
+sys.argv[0] = TARGET
+runpy.run_path(TARGET, run_name="__main__")
