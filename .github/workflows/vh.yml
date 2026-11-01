@@ -41,8 +41,10 @@ jobs:
           iconv -f utf-8 -t gb18030 bench/positive/pre_task-good.md > /tmp/gbk.md
           ./vh lint pre_task /tmp/gbk.md --no-log
 
-      - name: 归档数据可读
-        run: ./vh report --from eval/telemetry/r1-r2.jsonl
+      - name: 归档数据可读（本地跑一次 lint 再 report）
+        run: |
+          ./vh lint pre_task bench/positive/pre_task-rd-thermal.md
+          ./vh report
 
   # Windows 路径：没有 shebang、没有执行位、默认代码页不是 UTF-8
   # 这里用 PowerShell（Windows 用户没装 Git Bash 时的默认情况）
@@ -89,8 +91,12 @@ jobs:
           python vh.py lint pre_task "$env:RUNNER_TEMP\gbk.md" --no-log
           if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      - name: 归档数据可读
-        run: python vh.py report --from eval/telemetry/r1-r2.jsonl
+      - name: 归档数据可读（本地跑一次 lint 再 report）
+        run: |
+          python vh.py lint pre_task bench/positive/pre_task-rd-thermal.md
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          python vh.py report
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
       - name: vh.cmd 入口可用
         run: |

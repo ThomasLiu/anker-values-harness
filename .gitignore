@@ -7,3 +7,8 @@ __pycache__/
 # agent 会话数据，不进库
 .workbuddy-ai/
 .claude/settings.local.json
+
+# 盲评语料是派生产物：哈希名副本 + 渲染后的 prompt 都能用 setup.py 重新生成。
+# 评分文件（*.score.json）与 map.json 是原始证据，要进库。
+eval/r3/review/*.md
+eval/calib/review/*.md

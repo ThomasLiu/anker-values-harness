@@ -1,41 +1,43 @@
 # CLAUDE.md
 
-这个仓库把三条价值观（第一性 · 求极致 · 共成长）编译成可执行的 gate / lint / telemetry。
-你在本仓库或使用本 harness 的项目里工作时，**三阶段流程是强制的，不是建议**。
+把三条价值观（第一性 · 求极致 · 共成长）编译成确定性 lint 的小工具。价值观本身不写进 prompt——写了会失效，原因见 `docs/DESIGN.md`。
 
-命令一律用 `python vh.py`（Windows / macOS / Linux 通用）。
+Python 3.11+，零依赖。入口是 `vh.py`；`./vh` 和 `.\vh` 是它的薄壳，行为一致。
 
-## 三阶段流程
+## 工作流
 
-| 阶段 | 命令 | 产出 | 通过条件 |
+每个任务走三个阶段，每阶段都是「取 gate → 产出 → lint」：
+
+| 阶段 | 取 gate | 产出 | 判定 |
 |---|---|---|---|
-| 任务前 | `python vh.py prompt pre_task --task "<任务>"` | 拆解卡 | `python vh.py lint pre_task <文件>` exit 0 |
-| 交付前 | `python vh.py prompt pre_deliver` | 交付稿 | `python vh.py lint pre_deliver <文件>` exit 0 |
-| 任务后 | `python vh.py prompt post_task` | 沉淀记录 | `python vh.py lint post_task <文件>` exit 0 |
+| 任务前 | `python vh.py prompt pre_task --task "<任务>"` | 拆解卡 | `python vh.py lint pre_task "<文件>"` |
+| 交付前 | `python vh.py prompt pre_deliver` | 交付稿 | `python vh.py lint pre_deliver "<文件>"` |
+| 任务后 | `python vh.py prompt post_task` | 沉淀记录 | `python vh.py lint post_task "<文件>"` |
 
-每个阶段都必须：**先 `prompt` 拿 gate → 按骨架产出 → `lint` 验证**。跳过 prompt 直接产出等于没跑。
+规则内容由 `vh prompt` 注入，这里不另立一套。轻任务加 `--brief` 只注入 blocking 规则——全量 gate 套在每个小任务上，结果是这套东西被关掉。
 
-## 硬规则
+## 其余命令
 
-1. **lint 非 0 就是被拦下。** 补内容后重跑，不要绕过、不要换阶段重跑、不要 `--no-log` 掩盖。
-2. **不许为了让 lint 通过去改 `values.toml` 或 `vhcore/checks.py`。** 规则是判定标准，不是障碍物。真要改，先说明这是改标准而不是改产出。
-3. **规则以 `vh prompt` 的输出为准。** 不要去读 `values.toml` 和检查器源码「照着写」——实测过，那只会产出形式合规、实质空洞的东西。
-4. **轻任务用 `--brief`。** 只注入 blocking 规则。给每个任务都套全套 gate 的后果是这套东西被关掉。
-5. **产出文件存 UTF-8。** GBK 也能读，但会提示你另存。
-
-## 交付前
-
-跑完 `lint pre_deliver` 之后，用 `vh-critic` subagent 做一次独立评审（它看不到你的自我辩护）：
-
-```
-交给 vh-critic：<产出文件路径>
+```bash
+python vh.py stages    # 有哪些阶段、各多少条规则
+python vh.py report    # 通过率、最常被拦的规则、critic 均分
+python vh.py selftest  # 改过检查器后必须跑
 ```
 
-critic 返回 `silent_downgrade: true` 或 `verdict: 不可交付` 时，不许交付。拿到评分后用
-`python vh.py critique <文件> --record <score.json>` 写进遥测。
+## 约定
 
-## 不要做的事
+- 产出存 UTF-8，第一行写阶段标记 `<!-- vh:stage=pre_deliver -->`，hook 靠它选阶段。
+- `lint` 非 0 就是被拦下，补内容后重跑。绕过一次，后面的检查就都失去意义。
+- 改 `values.toml` 或 `vhcore/checks.py` 属于改判定标准，不是改产出。要做就单独说明，别混在一次交付里。
 
-- 不要自评。自我一致性偏差会让你永远给自己高分。
-- 不要把「写了段落」当成「满足要求」。检查器只判结构，critic 判质量，两个都过才算过。
-- 不要在没跑 gate 的情况下声称任务完成。
+## 三个会失效的默认做法
+
+1. **读 `values.toml` 和检查器源码来「照着写」。** 看到规则全文会诱发「对着检查表凑结构」——段落齐全、条目够数、实质空洞，而 lint 恰恰判不出这种空洞。规则以 `vh prompt` 的输出为准。
+2. **把 lint 通过当成质量合格。** 检查器只判结构，段落写了但内容是套话照样通过。质量那关交给 critic：交付前用 `vh-critic` subagent 评审（它看不到你的自我辩护），返回 `silent_downgrade: true` 或「不可交付」时按不可交付处理，评分用 `critique --record` 写进遥测。
+3. **用 `lint-all` 当单文件门禁。** 一份 pre_task 拆解卡永远过不了 pre_deliver 的规则，会 100% 误报。按阶段跑。
+
+## 改代码时
+
+- 动过 `vhcore/` 或 `values.toml` 就跑 `python vh.py selftest`，必须全过。
+- 新增规则要同时补正例和反例（`bench/`），只补一边等于没验证。
+- 每次逃逸都值得用 `python vh.py promote "<产出>" <规则id>` 沉淀成回归用例。

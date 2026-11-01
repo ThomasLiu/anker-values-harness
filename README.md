@@ -42,19 +42,18 @@ telemetry（观测层）  vh report            看价值观有没有漂移
 git clone git@github.com:ThomasLiu/anker-values-harness.git
 cd anker-values-harness
 
-python vh.py stages                                    # 看有哪些阶段和规则
-python vh.py prompt pre_task --task "帮我写触达文案"     # 拿任务前的 gate
-python vh.py lint pre_task 拆解卡.md                    # 检查产出，exit 0 才放行
-python vh.py report                                    # 看指标
-python vh.py selftest                                  # 验证检查器本身有效
-python vh.py report --from eval/telemetry/r1-r2.jsonl  # 从归档复现历史数据
-python vh.py promote 逃逸产出.md ex.redteam             # 把一次逃逸沉淀成回归用例
-python vh.py critique 交付稿.md --record score.json     # 回收 critic 评分
+python vh.py stages                                         # 看有哪些阶段和规则
+python vh.py prompt pre_task --task "65W 充电器温升超标能不能出货"  # 拿任务前的 gate
+python vh.py lint pre_task 拆解卡.md                          # 检查产出，exit 0 才放行
+python vh.py report                                         # 看指标
+python vh.py selftest                                       # 验证检查器本身有效
+python vh.py promote 逃逸产出.md ex.redteam                   # 把一次逃逸沉淀成回归用例
+python vh.py critique 交付稿.md --record score.json           # 回收 critic 评分
 ```
 
 `python vh.py` 是三个平台通用的写法。偷懒的话 POSIX 用 `./vh`，Windows 用 `.\vh`（走 `vh.cmd`），两者都只是转发到 `vh.py`。
 
-`.vh/` 是运行时数据，不进版本库；实验用的遥测归档在 `eval/telemetry/`，那份进库——否则 clone 下来所有数字都不可复现。
+`.vh/` 是运行时数据，不进版本库。要留档就用 `vh report --export <path>` 导出 jsonl，`vh report --from <path>` 能读回来。
 
 接到任何 agent 上的最小用法：
 
@@ -97,6 +96,8 @@ lint 非 0 就返工。绕过一次，这套 harness 就废了。
 ```
 
 （macOS 上若没有 `python` 命令，改成 `python3`。）
+
+hook 不猜阶段，只看产出第一行的标记 `<!-- vh:stage=pre_deliver -->`，没有标记就跳过。刻意不用 `lint-all`：一份 pre_task 拆解卡永远过不了 pre_deliver 的规则，那样每次写入都会误报，hook 两天内就会被关掉。
 
 默认**没有**装这个 hook。原因是它会对每一次文件写入触发，轻任务上纯属噪音——DESIGN.md 里写过，「给每个任务都套全套 gate 的后果是 harness 被关掉」。等三阶段流程跑顺了再考虑上硬门禁。
 
@@ -155,42 +156,39 @@ CI 同时跑 `ubuntu-latest` 和 `windows-latest`，两边都必须过。
 ```
 values.toml          唯一事实源：价值观 → 规则 → 检查器
 VALUES.md            人读版：释义 + 正例/反例
-vh                   CLI 入口
+vh.py                CLI 主入口（vh / vh.cmd 转发到它）
 vhcore/              零依赖实现
 gates/               三个阶段的操作手册（怎么做得比 lint 要求更好）
 rubrics/             0-3 分档描述，给 critic 用
 evaluator/critic.md  独立评审 prompt（不共享上下文，防自我一致性偏差）
-bench/               正例/反例基准，selftest 用
-scenarios/           业务场景用例
-eval/                A/B 实测记录
-eval/telemetry/      归档遥测，report --from 读它
+bench/               17 份判定基准：6 正例 + 11 反例，selftest 用
+scenarios/           10 个安克真实业务场景（研发 5 / 非研发 5）
+CLAUDE.md            Claude Code 自动加载的三阶段 SOP
 docs/DESIGN.md       设计取舍与已知缺陷
 docs/ROADMAP.md      缺口清单与分批次方案
-.github/workflows/   CI：selftest + 正例全过 + 配置校验
+.github/workflows/   CI：Linux + Windows 双平台跑 selftest 与正例
 ```
 
-## 实测
+## 测试场景：安克的真实办公室
 
-两轮 subagent 实验，4 个猎头业务场景，独立 critic 盲评（每条价值观 0-3 分，满分 9）：
+`scenarios/scenarios.toml` 里是 10 个真实业务场景，研发岗与非研发岗各 5 个。选场景的标准是三条：真实会发生、有取舍、至少涉及一个不可逆或对外动作。
 
-| 条件 | 合计 /36 | 第一性 | 求极致 | 共成长 | 静默降级 |
-|---|---|---|---|---|---|
-| 裸跑 | 12 | 1.00 | 0.25 | 1.75 | 3/4 份有 |
-| 带 harness（规则可见） | 24 | 1.75 | 2.50 | 1.75 | 0/4 |
-| 带 harness（盲测） | **31** | **2.25** | **3.00** | **2.50** | **0/4** |
+| 场景 | 岗位 | 卡在哪 |
+|---|---|---|
+| 65W GaN 充电器 45℃ 满载 78℃ | 硬件研发 | 改模 12 万 vs 放行 |
+| eufy 扫地机深色地毯定位丢失 | 算法研发 | 调参糊过去 vs 承认传感器到极限 |
+| soundcore 耳机固件全量推送 | 嵌入式 | 3.2% 用户受影响，推出去收不回 |
+| Nebula 投影亮度标称口径 | 硬件 + 产品 | 法务不许认，用户投诉 40 条 |
+| 41.2 万台移动电源批次召回 | 质量 + 硬件 | 3.9 亿成本 vs 热失控 |
+| 电芯二供导入，顺带压价 7% | 供应链 | 保供 vs 降本 |
+| 北美站新品首发定价与备货 | 电商运营 | 价格带 vs 类目排名 |
+| 割草机器人 Q4 是否继续投 | 品类规划 | 规模不够 vs 产品力不够 |
+| 算法团队扩编的人才画像 | HR | 大厂背景要求 vs 80 万预算 |
+| 批量客诉的统一口径 | 客服 | 40 个客服各自为政 |
 
-三点结论：
+`bench/` 里是对应的判定基准：6 份合格产出（正例）+ 11 份真实逃逸样本（反例，每条 blocking 规则一个）。`vh selftest` 跑这 17 份。
 
-1. **求极致从 0.25 涨到 3.00 是最大的贡献。** 裸跑时零份写红队自查、零份写影响范围——不是能力问题，是没有要求就不会主动自我否定。
-2. **规则透明会被反向利用。** 规则可见组里 4/6 个 agent 汇报「我先读了 values.toml 和检查器源码，照着写」。真实部署应把配置和业务仓库分离（`VH_ROOT` 指到仓库外），agent 只看 `vh prompt` 输出。
-3. **没解决的是「结论确定度高于证据强度」。** critic 在三个场景里独立给出同一个判断。为此加了 `fp.number-provenance`，但尚未经过新一轮验证。
-
-完整数据、被修掉的 7 个解析 bug 见 [`eval/RESULTS.md`](eval/RESULTS.md)。原始数字可直接复现：
-
-```bash
-./vh report --from eval/telemetry/r1-r2.jsonl   # 43 次 lint 的通过率与被拦规则
-./vh selftest                                    # 13 个基准用例
-```
+正例必须全过——否则是误报，合格产出被打回，agent 会开始绕过 harness。反例必须被指定规则拦下——否则是漏报，harness 变成装饰品。
 
 ## 已知边界
 

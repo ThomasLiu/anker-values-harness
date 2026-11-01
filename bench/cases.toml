@@ -2,94 +2,147 @@
 #
 # 正例必须全过——否则是误报，会把合格产出打回，agent 会开始绕过 harness。
 # 反例必须被指定规则拦下——否则是漏报，harness 变成装饰品。
+#
+# 场景取自安克真实业务：充电储能（65W GaN、移动电源召回、电芯二供）、
+# 智能家居（eufy 扫地机、安防摄像头）、智能影音（soundcore 耳机、Nebula 投影）、
+# 以及电商运营与供应链的日常决策。研发岗与非研发岗各占一半。
+
+# ---------------------------------------------------------------------------
+# 正例：合格产出长什么样
+# ---------------------------------------------------------------------------
 
 [[case]]
-name = "pos/pre_task-good"
+name = "pos/pre_task-rd-thermal"
 stage = "pre_task"
-file = "bench/positive/pre_task-good.md"
+file = "bench/positive/pre_task-rd-thermal.md"
 expect = "pass"
+# 研发岗 · 65W GaN 充电器 45℃ 满载外壳 78℃ 超规格
 
 [[case]]
-name = "pos/pre_deliver-good"
+name = "pos/pre_task-nonrd-cell-second-source"
+stage = "pre_task"
+file = "bench/positive/pre_task-nonrd-cell-second-source.md"
+expect = "pass"
+# 非研发岗 · 电芯二供导入 + 顺带降本 7%
+
+[[case]]
+name = "pos/pre_deliver-rd-recall"
 stage = "pre_deliver"
-file = "bench/positive/pre_deliver-good.md"
+file = "bench/positive/pre_deliver-rd-recall.md"
 expect = "pass"
+# 研发岗 · A1287 批次 41.2 万台移动电源召回决策（对外动作，必须有影响范围）
 
 [[case]]
-name = "pos/post_task-good"
+name = "pos/pre_deliver-nonrd-pricing"
+stage = "pre_deliver"
+file = "bench/positive/pre_deliver-nonrd-pricing.md"
+expect = "pass"
+# 非研发岗 · soundcore 新品北美站首发定价与备货
+
+[[case]]
+name = "pos/post_task-rd-recall-review"
 stage = "post_task"
-file = "bench/positive/post_task-good.md"
+file = "bench/positive/post_task-rd-recall-review.md"
 expect = "pass"
+# 研发岗 · 召回事件复盘，沉淀出 72 小时清单与来料变更 SOP
 
 [[case]]
-name = "neg/pre_task-no-criteria"
+name = "pos/post_task-nonrd-promo-review"
+stage = "post_task"
+file = "bench/positive/post_task-nonrd-promo-review.md"
+expect = "pass"
+# 非研发岗 · Prime Day 备货翻车复盘，沉淀出含竞品情景的测算模板
+
+# ---------------------------------------------------------------------------
+# 反例：每条 blocking 规则至少一个真实逃逸样本
+# ---------------------------------------------------------------------------
+
+[[case]]
+name = "neg/pre_task-rd-no-criteria"
 stage = "pre_task"
-file = "bench/negative/pre_task-no-criteria.md"
+file = "bench/negative/pre_task-rd-no-criteria.md"
 expect = "fail"
 expect_rules = ["ex.criteria-first"]
+# 研发岗 · eufy 扫地机深色地毯定位丢失，只拆问题不定验收标准
 
 [[case]]
-name = "neg/pre_deliver-convention"
-stage = "pre_deliver"
-file = "bench/negative/pre_deliver-convention.md"
-expect = "fail"
-expect_rules = ["fp.no-convention-appeal"]
-
-[[case]]
-name = "neg/pre_deliver-single-option"
-stage = "pre_deliver"
-file = "bench/negative/pre_deliver-single-option.md"
-expect = "fail"
-expect_rules = ["fp.alternatives"]
-
-[[case]]
-name = "neg/pre_deliver-blast-radius"
-stage = "pre_deliver"
-file = "bench/negative/pre_deliver-blast-radius.md"
-expect = "fail"
-expect_rules = ["ex.blast-radius"]
-
-[[case]]
-name = "neg/post_task-empty"
-stage = "post_task"
-file = "bench/negative/post_task-empty.md"
-expect = "fail"
-expect_rules = ["cg.asset"]
-
-# 以下三条来自第一轮 A/B 实测暴露的逃逸路径，加进来防止回退
-
-[[case]]
-name = "neg/pre_deliver-blast-escape"
-stage = "pre_deliver"
-file = "bench/negative/pre_deliver-blast-escape.md"
-expect = "fail"
-expect_rules = ["ex.blast-radius"]
-
-[[case]]
-name = "neg/pre_task-hedge"
+name = "neg/pre_task-rd-hedge"
 stage = "pre_task"
-file = "bench/negative/pre_task-hedge.md"
+file = "bench/negative/pre_task-rd-hedge.md"
 expect = "fail"
 expect_rules = ["fp.assumption-falsifiable"]
+# 研发岗 · Nebula 投影亮度虚标投诉，假设写成「大概」「应该」
 
 [[case]]
-name = "neg/pre_deliver-weak-redteam"
-stage = "pre_deliver"
-file = "bench/negative/pre_deliver-weak-redteam.md"
+name = "neg/pre_task-nonrd-thin-assumption"
+stage = "pre_task"
+file = "bench/negative/pre_task-nonrd-thin-assumption.md"
 expect = "fail"
-expect_rules = ["ex.redteam"]
+expect_rules = ["fp.assumption-explicit"]
+# 非研发岗 · 割草机器人品类是否继续投，假设全是判断、没有验证方式
 
 [[case]]
-name = "neg/pre_deliver-no-provenance"
+name = "neg/pre_deliver-rd-convention"
 stage = "pre_deliver"
-file = "bench/negative/pre_deliver-no-provenance.md"
+file = "bench/negative/pre_deliver-rd-convention.md"
+expect = "fail"
+expect_rules = ["fp.no-convention-appeal"]
+# 研发岗 · 65W 充电器温升放行，用「行业惯例允许 +30℃」当决策依据
+
+[[case]]
+name = "neg/pre_deliver-rd-single-option"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-rd-single-option.md"
+expect = "fail"
+expect_rules = ["fp.alternatives"]
+# 研发岗 · 召回方案只给一个选项，没有对照
+
+[[case]]
+name = "neg/pre_deliver-rd-no-provenance"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-rd-no-provenance.md"
 expect = "fail"
 expect_rules = ["fp.number-provenance"]
+# 非研发岗 · 营销预算追加，满篇百分比与万元，没有数据来源
 
-# 由 vh promote 沉淀，来源：escape-redteam.md
 [[case]]
-name = "neg/pre_deliver-ex-redteam"
+name = "neg/pre_deliver-rd-weak-redteam"
 stage = "pre_deliver"
-file = "bench/negative/pre_deliver-ex-redteam.md"
+file = "bench/negative/pre_deliver-rd-weak-redteam.md"
 expect = "fail"
 expect_rules = ["ex.redteam"]
+# 研发岗 · Nebula 固件限亮度，红队自查只写 2 条
+
+[[case]]
+name = "neg/pre_deliver-rd-no-blast"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-rd-no-blast.md"
+expect = "fail"
+expect_rules = ["ex.blast-radius"]
+# 研发岗 · soundcore 耳机固件全量推送，不写影响范围
+
+[[case]]
+name = "neg/pre_deliver-rd-silent-downgrade"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-rd-silent-downgrade.md"
+expect = "fail"
+expect_rules = ["arb.no-silent-downgrade"]
+# 研发岗 · eufy 安防摄像头砍掉云端存储，不声明取舍
+
+[[case]]
+name = "neg/post_task-rd-empty"
+stage = "post_task"
+file = "bench/negative/post_task-rd-empty.md"
+expect = "fail"
+expect_rules = ["cg.asset"]
+# 研发岗 · 温升项目复盘只有感受与打算，没沉淀出任何可加载资产
+
+[[case]]
+name = "neg/post_task-nonrd-tradeoff-missing"
+stage = "post_task"
+file = "bench/negative/post_task-nonrd-tradeoff-missing.md"
+expect = "fail"
+expect_rules = ["cg.tradeoff-declared"]
+# 非研发岗 · 大促备货复盘写了「暂不覆盖欧洲站」，但没有任何取舍声明。
+# 这条规则此前是唯一一条没有反例的 blocking 规则——它与 arb.no-silent-downgrade
+# 逻辑相同，反例只有 pre_deliver 那条，post_task 侧的判定从来没被验证过。

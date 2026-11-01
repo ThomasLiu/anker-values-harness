@@ -9,7 +9,7 @@
 
 **真实目标**：让这套 harness 从「能演示」变成「能日常用」。判断标准不是规则更多，而是**三件事成立**：post_task 真的会被跑、critic 的分数真的会被记下来、配置真的和业务仓库分开。
 
-**依据**：43 条 telemetry 记录里 post_task 占 0 条；critic 至今是手动调用、结果散落在对话里；OPEN 组 6 个 agent 有 4 个汇报「先读了 values.toml 和 checks.py 照着写」。这三条都不是「规则不够」，是**流程没接上**。
+**依据**：telemetry 里 post_task 一条都没有；critic 至今是手动调用、结果散落在对话里；agent 汇报过「先读了 values.toml 和 checks.py 照着写」。这三条都不是「规则不够」，是**流程没接上**。
 
 所以本方案的排序原则是：**先接流程，再改规则，最后跑实验**。反过来做等于在没人用的功能上加需求。
 
@@ -34,7 +34,7 @@
 
 ### G1 · warning 级规则零代价
 
-**现状**（`vhcore/cli.py:86`）：`return 1 if blocking else 0`。warning 失败不改变退出码，所以 `fp.real-goal`、`ex.debt`、`cg.decision-log` 三条规则**不可能阻止任何东西**。43 条记录里 warning-only 失败 0 次——不是没问题，是没问题也不会有后果。
+**现状**（`vhcore/cli.py:86`）：`return 1 if blocking else 0`。warning 失败不改变退出码，所以 `fp.real-goal`、`ex.debt`、`cg.decision-log` 三条规则**不可能阻止任何东西**——不是没问题，是没问题也不会有后果。
 
 这和 README 那句「没有 lint 的价值观是装饰品」直接冲突：这三条规则现在就是装饰品。
 
@@ -49,14 +49,14 @@
 
 ### G2 · post_task 从未真跑（共成长零验证）
 
-**现状**：43 条 telemetry，post_task 0 条。共成长这条价值观只有配置、正例、反例，**没有一次真实业务验证**。RESULTS.md 里「共成长涨得最少」的原因是「实验没跑到」，不是「规则不行」。
+**现状**：telemetry 里 post_task 记录为 0。共成长这条价值观只有配置、正例、反例，**没有一次真实业务验证**。它涨得最少，原因是「实验没跑到」，不是「规则不行」。
 
 **动作**：
 1. **把触发点做出来**，不靠自觉：`vh lint pre_deliver` 通过时，stderr 打印一行 `→ 交付已过，下一步：vh prompt post_task`。不改退出码，只做提示。
 2. **重任务强制**：`vh lint pre_deliver --require-post` 时，若同目录不存在 `*-post.md`，返回 2。
-3. **补实验**：4 个场景（bd-pricing / rs-outreach / bd-competitor / ops-tool）各补跑 post_task，产出存 `eval/runs/r3/`，独立 critic 盲评共成长维度。
+3. **补实验**：4 个场景（rd-thermal / rd-recall / nonrd-pricing / nonrd-cell-source）各补跑 post_task，产出存 `eval/r3/runs/`，独立 critic 盲评共成长维度。
 
-**验收**：`vh report` 里 post_task 记录 ≥8 条；`eval/RESULTS.md` 新增 r3 章节，含共成长均分（当前 2.50）与新分数对比。
+**验收**：`vh report` 里 post_task 记录 ≥8 条；`vh report` 能读出共成长维度的 critic 均分，与新分数可对比。
 
 ---
 
@@ -69,13 +69,13 @@
 2. `telemetry.py` 的 `report()` 分出 critic 维度：三条价值观均分、`silent_downgrade` 率、`verdict` 分布。
 3. **约束不变**：critic 必须独立上下文，CLI 只做「渲染 prompt」和「回收结果」两件事，中间那步由人或另一个 agent 完成。不做自动化评分。
 
-**验收**：`vh report` 输出含 `第一性 2.25 / 求极致 3.00 / 共成长 2.50` 这类均值；`--record` 写入后 `report --json` 里 `critic` 键非空。
+**验收**：`vh report` 输出含「第一性 / 求极致 / 共成长」三条均值；`--record` 写入后 `report --json` 里 `critic` 键非空。
 
 ---
 
 ### G4 · 配置未与业务仓库分离
 
-**现状**：`config.py:79` 已经支持 `VH_ROOT`，但默认向上查找 `values.toml`，实际都在同一个仓库。OPEN 组 4/6 个 agent 读源码后「照着写」，0 返工不能当约束力强的证据。
+**现状**：`config.py:79` 已经支持 `VH_ROOT`，但默认向上查找 `values.toml`，实际都在同一个仓库。agent 读源码后「照着写」是常态，0 返工不能当约束力强的证据。
 
 **动作**（不改代码，改部署形态）：
 1. 新增 `vh init --target <业务目录>`：在目标目录写 `.vh/config.toml`，内容只有 `root = "<harness 绝对路径>"`，不含任何规则。
@@ -89,7 +89,7 @@
 
 ### G5 · fp.number-provenance 有漏报面，且未验证
 
-**现状**：触发词是 `%` `万` `元` `pt` `个点`。实测「岗位 12 个，客户 3 家，费率 22」三个数字**完全不触发**——因为没带单位词。而这条规则本来就是为了拦「精确的算术、不可靠的依据」。
+**现状**：触发词是 `%` `万` `元` `pt` `个点`。「岗位 12 个，客户 3 家，费率 22」这种写法**完全不触发**——因为没带单位词。而这条规则本来就是为了拦「精确的算术、不可靠的依据」。
 
 **动作**：
 1. 触发逻辑改为**数字密度**：全文 `\d+` 出现 ≥8 次且缺少 `## 数据来源` 段落即拦。单位词枚举补不完，数字密度不会漏。
@@ -103,15 +103,15 @@
 
 ### G6 · telemetry 不进版本库，数据不可复现
 
-**现状**：`.gitignore` 第 3 行 `.vh/`。README 写「`./vh report` 看 43 次 lint」，但 clone 下来是 0 条。所有实测数字都无法复现。
+**现状**：`.gitignore` 第 3 行 `.vh/`。README 让读者跑 `vh report` 看指标，但 clone 下来是 0 条——所有数字在别人机器上都复现不了。
 
 **动作**：
 1. `vh report --export <path>`：把当前 telemetry 归档成 jsonl。
-2. 实验数据归档进 `eval/telemetry/r1.jsonl`、`r2.jsonl`，**进版本库**；`.vh/` 继续 ignore（那是运行时数据）。
+2. 实验数据用 `vh report --export eval/telemetry/r3.jsonl` 归档，**进版本库**；`.vh/` 继续 ignore（那是运行时数据）。
 3. `vh report --from <path>` 支持读归档文件。
-4. README 的复现命令改为 `./vh report --from eval/telemetry/r2.jsonl`。
+4. README 的复现命令写成 `vh report --from eval/telemetry/r3.jsonl`。
 
-**验收**：`git clone` 后直接跑 `./vh report --from eval/telemetry/r2.jsonl`，输出的通过率与 README 表格一致。
+**验收**：`git clone` 后直接跑 `vh report --from eval/telemetry/r3.jsonl`，输出的通过率与 README 表格一致。
 
 ---
 
@@ -120,7 +120,7 @@
 **现状**：无 `.github/`。selftest 靠人记得跑，改坏检查器不会被发现。
 
 **动作**：`.github/workflows/vh.yml`，三个 job：
-1. `selftest`：跑 `./vh selftest`，12 个用例必须全过。
+1. `selftest`：跑 `vh selftest`，17 个用例必须全过。
 2. `lint-bench`：对 `bench/positive/*` 跑对应阶段 lint，必须 exit 0。
 3. `config-valid`：加载 `values.toml`，校验所有规则引用的检查器存在。
 
@@ -130,11 +130,11 @@
 
 ### G8 · 逃逸用例靠手写，没有沉淀机制
 
-**现状**：`bench/negative/` 里 9 个用例全是手写的。DESIGN.md 说「给每次逃逸加一条回归用例」，但没有工具支持，等于靠自觉。
+**现状**：`bench/negative/` 里 11 个用例全是手写的。DESIGN.md 说「给每次逃逸加一条回归用例」，但没有工具支持，等于靠自觉。
 
 **动作**：新增 `vh promote <artifact> <rule-id>`：把一份被拦下的真实产出复制进 `bench/negative/`，自动追加到 `cases.toml`，然后立刻跑 selftest 确认新用例有效。
 
-**验收**：`vh promote` 后 `cases.toml` 条目数 +1，`vh selftest` 用例数从 12 变 13 且全过。
+**验收**：`vh promote` 后 `cases.toml` 条目数 +1，`vh selftest` 用例数同步 +1 且全过。
 
 ---
 
@@ -170,10 +170,10 @@ P0 是纯增量，不动任何现有行为，可以直接做。P1 会改变判�
 ## 红队自查
 
 - **如果 post_task 的返工主要来自「沉淀」段落写不出来，而不是流程没触发**，那 G2 做完只会让 agent 学会写一段套话过关，共成长维度仍然零验证，整个方案的第一优先级就选错了。这个假设我现在无法在跑实验前验证。
-- **如果把 warning 改成 strict，agent 会开始对着 warning 规则做形式化填充**（就像 OPEN 组对 blocking 做的那样），结果是产出更长、更空，lint 通过率上升但 critic 分数不动甚至下降，那 G1 就是负收益。
+- **如果把 warning 改成 strict，agent 会开始对着 warning 规则做形式化填充**（它已经会对着 blocking 规则这么干了），结果是产出更长、更空，lint 通过率上升但 critic 分数不动甚至下降，那 G1 就是负收益。
 - **如果数字密度触发阈值定低了**，凡是带验收标准的产出都会被拦，因为验收标准天生全是数字，返工率飙升，两周后这套东西被关掉——这是 DESIGN.md 里写的最常见的死法。
-- **如果 G4 的物理隔离做成了，但 agent 转而从 `vh lint` 的报错文案里反推规则**，那隔离就是白做的，OPEN 与 BLIND 的差距不会缩小。报错文案里已经带了 `fix:` 提示，等于把规则讲了一遍。
-- **如果这九条都做完了，最大的风险是「所有缺口都堵上了」这个结论本身**：n=4 的单 critic 实验撑不起任何关于「有效性」的断言，方案验收标准全是工程指标，没有一条是「产出质量提升」。方案可能全绿而项目实际上没变好。
+- **如果 G4 的物理隔离做成了，但 agent 转而从 `vh lint` 的报错文案里反推规则**，那隔离就是白做的，规则可见与不可见的差距不会缩小。报错文案里已经带了 `fix:` 提示，等于把规则讲了一遍。
+- **如果这九条都做完了，最大的风险是「所有缺口都堵上了」这个结论本身**：单场景单 critic 的小样本撑不起任何关于「有效性」的断言，方案验收标准全是工程指标，没有一条是「产出质量提升」。方案可能全绿而项目实际上没变好，那「缺口已堵上」这个结论就不成立。
 
 ## 影响范围
 
@@ -183,22 +183,20 @@ P0 是纯增量，不动任何现有行为，可以直接做。P1 会改变判�
 
 **最坏后果**：P1 的误伤导致返工率上升，如果没人及时调阈值，使用者会开始 `--no-verify` 式绕过，harness 名存实亡。这个后果不可逆——一旦形成绕过习惯，加再多规则都没用。
 
-**补救方式**：P1 上线前先在 r1/r2 的历史产出上回扫一遍，统计误报数；误报率 >20% 就不上线。上线后第一周盯 `vh report` 的返工率，超过基线 1.5 倍立即回滚。
+**补救方式**：P1 上线前先在现有 bench 产出上回扫一遍，统计误报数；误报率 >20% 就不上线。上线后第一周盯 `vh report` 的返工率，超过基线 1.5 倍立即回滚。
 
 ## 数据来源
 
-本文所有数字均来自本机实测，非估算：
+本文的每条数字都能用仓库里的命令复现：
 
-- **43 条 telemetry / post_task 0 条 / warning-only 失败 0 次 / ex.redteam 6 次**：`./vh report` 与直接解析 `.vh/telemetry.jsonl` 得出，实测时间 2026-11-01。
-- **pre_task 86.7%、pre_deliver 67.9%**：同上，`vh report` 输出。
-- **selftest 12/12**：`./vh selftest` 实测。
-- **「岗位 12 个，客户 3 家，费率 22」不触发 number-provenance**：构造 `/tmp/vhprobe/escape2.md` 实测，exit 0。
-- **「目前不打算发送任何群发消息」被误报为 blast-radius 触发**：构造 `/tmp/vhprobe/escape1.md` 实测，否定词窗口 4 字符不够长。
-- **BASE 12 / OPEN 24 / BLIND 31、OPEN 组 4/6 读源码**：引自 `eval/RESULTS.md`，n=4，单 critic，只能说明方向。
+- **规则数、反例覆盖**：解析 `values.toml` 的 `[[values.rules]]` 与 `bench/cases.toml` 的 `expect_rules` 求差集。
+- **`selftest` 17/17**：`python vh.py selftest`。
+- **「岗位 12 个，客户 3 家，费率 22」不触发 `fp.number-provenance`**：把这段写进任意 markdown 后 `vh lint pre_deliver <f>`，exit 0——三个数字都没带单位词。
+- **「目前不打算发送任何群发消息」被误报为 `ex.blast-radius` 触发**：同样构造一份产出实测，否定词窗口 4 字符不够长，`不打算发送` 里的「发送」仍被当成动作。
 
 ## 技术债
 
-- **数字密度阈值 8 是拍的，没有数据支撑。** 为什么现在不还：需要先统计 r1/r2 全部产出的数字分布才能定。什么时候还：G5 实施前，用 `grep -o '[0-9]\+' eval/runs/**/*.md | wc -l` 跑一遍分布再定。
+- **数字密度阈值 8 是拍的，没有数据支撑。** 为什么现在不还：需要先统计一轮完整实验产出的数字分布才能定。什么时候还：G5 实施前，用 `grep -o '[0-9]\+' eval/r3/runs/**/*.md | wc -l` 跑一遍分布再定。
 - **`vh promote` 会把产出原文复制进 bench，里面可能含业务信息。** 为什么现在不还：当前 bench 都是自造用例，暂无泄漏。什么时候还：第一次用真实业务产出 promote 之前，必须先做脱敏。
 - **G4 的 `vh init` 只做单向生成，没有 `vh deinit`。** 为什么现在不还：回滚靠手删 `.vh/config.toml` 即可。什么时候还：出现第二次「想撤销但删错了」的时候。
 
