@@ -1,0 +1,32 @@
+{
+  "artifact_type": "拆解卡",
+  "first_principles": {
+    "score": 2,
+    "passed": ["F2", "F3", "F4"],
+    "failed": ["F1"],
+    "cap_applied": null,
+    "evidence": "两者本来就差 30% 以上；假设：用户实测值大概在 500-600 流明区间",
+    "gap": "F1 不过：撑起「真实目标」判断的「峰值亮度 vs 屏幕平均亮度差 30% 以上」没有任何实测、计算式或引用来源，也未标为估算，属凭空断言；800 流明标称与 40 多条投诉有出处，但三个承重数字中有一个无出处即不过。"
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "可交付",
+  "top_fix": "给「30% 以上」补出处：要么写出计算式（峰值亮度与屏幕平均亮度的换算关系及系数来源），要么改为「待测：本机按 ISO21118 与用户口径各测一次，预期差 30% 左右」并纳入验收标准。"
+}

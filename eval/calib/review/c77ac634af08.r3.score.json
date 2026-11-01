@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "1200 元换机成本：售后部门口径，实测",
+    "gap": "F1-F4 全部通过：三个承重数字均有出处，2 条假设均有验证动作，A/B/C 三条路径各写了不选的理由，承重结论无不可证伪措辞"
+  },
+  "extremeness": {
+    "score": 0,
+    "passed": ["E2"],
+    "failed": ["E1", "E3", "E4"],
+    "cap_applied": "E3 不过，求极致 =0",
+    "evidence": "固件推送后无法回滚到旧版本",
+    "gap": "E1 红队只有 2 条，不足 3 条；E3 影响范围写了对象/最坏后果/回滚，但缺范围量级（台数/人数/金额）；E4 只有隐藏开关补救与下季度还债，没有「一旦…就停/退/切」的止损触发条件"
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "不可交付",
+  "top_fix": "在「影响范围」补上范围量级：写明本次固件覆盖的机型与在网台数（或受影响用户数、潜在换机金额），使 E3 四项齐全、解掉求极致封顶"
+}

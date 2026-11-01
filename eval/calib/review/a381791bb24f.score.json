@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "3.2% 活跃用户受影响：App 埋点统计，实测",
+    "gap": "四项全过：三个承重数字均有实测出处；两条假设各配一条验证动作；方案 B/C 均写了不选理由；承重句无不可证伪措辞。"
+  },
+  "extremeness": {
+    "score": 0,
+    "passed": ["E1", "E2"],
+    "failed": ["E3", "E4"],
+    "cap_applied": "E3 不过，求极致 =0",
+    "evidence": "全量推送后无法回滚",
+    "gap": "E3 不过：全量 OTA 是对外且不可回滚的动作，只写了「全部用户」，缺台数/人数级的范围量级；E4 不过：全文没有「若断连率高于 X 就停止推送」这类止损或切换触发条件。"
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "不可交付",
+  "top_fix": "在结论段补上全量推送的影响范围量级：写明本次 OTA 覆盖的设备台数与用户数（如「全量 X 万台、Y 万活跃用户」），并同句标注不可回滚，把 E3 的四要素补齐。"
+}

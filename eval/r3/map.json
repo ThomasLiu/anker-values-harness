@@ -1,0 +1,362 @@
+[
+  {
+    "id": "9ce04aa44e1c",
+    "run": "nonrd-cell-source/BASE/post_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "BASE",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BASE/post_task.md",
+    "prompt": "eval/r3/review/9ce04aa44e1c.prompt.md",
+    "score": "eval/r3/review/9ce04aa44e1c.score.json"
+  },
+  {
+    "id": "debc741cabd7",
+    "run": "nonrd-cell-source/BASE/pre_deliver",
+    "scenario": "nonrd-cell-source",
+    "condition": "BASE",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BASE/pre_deliver.md",
+    "prompt": "eval/r3/review/debc741cabd7.prompt.md",
+    "score": "eval/r3/review/debc741cabd7.score.json"
+  },
+  {
+    "id": "670638aeff8d",
+    "run": "nonrd-cell-source/BASE/pre_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "BASE",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BASE/pre_task.md",
+    "prompt": "eval/r3/review/670638aeff8d.prompt.md",
+    "score": "eval/r3/review/670638aeff8d.score.json"
+  },
+  {
+    "id": "f12d0507fd7b",
+    "run": "nonrd-cell-source/BLIND/post_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "BLIND",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BLIND/post_task.md",
+    "prompt": "eval/r3/review/f12d0507fd7b.prompt.md",
+    "score": "eval/r3/review/f12d0507fd7b.score.json"
+  },
+  {
+    "id": "69d8da772395",
+    "run": "nonrd-cell-source/BLIND/pre_deliver",
+    "scenario": "nonrd-cell-source",
+    "condition": "BLIND",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BLIND/pre_deliver.md",
+    "prompt": "eval/r3/review/69d8da772395.prompt.md",
+    "score": "eval/r3/review/69d8da772395.score.json"
+  },
+  {
+    "id": "4e290c466c2e",
+    "run": "nonrd-cell-source/BLIND/pre_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "BLIND",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/BLIND/pre_task.md",
+    "prompt": "eval/r3/review/4e290c466c2e.prompt.md",
+    "score": "eval/r3/review/4e290c466c2e.score.json"
+  },
+  {
+    "id": "5a5bcd17d201",
+    "run": "nonrd-cell-source/OPEN/post_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "OPEN",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/OPEN/post_task.md",
+    "prompt": "eval/r3/review/5a5bcd17d201.prompt.md",
+    "score": "eval/r3/review/5a5bcd17d201.score.json"
+  },
+  {
+    "id": "dade174cfa47",
+    "run": "nonrd-cell-source/OPEN/pre_deliver",
+    "scenario": "nonrd-cell-source",
+    "condition": "OPEN",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-cell-source/OPEN/pre_deliver.md",
+    "prompt": "eval/r3/review/dade174cfa47.prompt.md",
+    "score": "eval/r3/review/dade174cfa47.score.json"
+  },
+  {
+    "id": "2025fdd3fa6a",
+    "run": "nonrd-cell-source/OPEN/pre_task",
+    "scenario": "nonrd-cell-source",
+    "condition": "OPEN",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-cell-source/OPEN/pre_task.md",
+    "prompt": "eval/r3/review/2025fdd3fa6a.prompt.md",
+    "score": "eval/r3/review/2025fdd3fa6a.score.json"
+  },
+  {
+    "id": "79b3544bfcfa",
+    "run": "nonrd-pricing/BASE/post_task",
+    "scenario": "nonrd-pricing",
+    "condition": "BASE",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/BASE/post_task.md",
+    "prompt": "eval/r3/review/79b3544bfcfa.prompt.md",
+    "score": "eval/r3/review/79b3544bfcfa.score.json"
+  },
+  {
+    "id": "54cdd62a4b5d",
+    "run": "nonrd-pricing/BASE/pre_deliver",
+    "scenario": "nonrd-pricing",
+    "condition": "BASE",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-pricing/BASE/pre_deliver.md",
+    "prompt": "eval/r3/review/54cdd62a4b5d.prompt.md",
+    "score": "eval/r3/review/54cdd62a4b5d.score.json"
+  },
+  {
+    "id": "40738d828e1c",
+    "run": "nonrd-pricing/BASE/pre_task",
+    "scenario": "nonrd-pricing",
+    "condition": "BASE",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/BASE/pre_task.md",
+    "prompt": "eval/r3/review/40738d828e1c.prompt.md",
+    "score": "eval/r3/review/40738d828e1c.score.json"
+  },
+  {
+    "id": "90330cc7630e",
+    "run": "nonrd-pricing/BLIND/post_task",
+    "scenario": "nonrd-pricing",
+    "condition": "BLIND",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/BLIND/post_task.md",
+    "prompt": "eval/r3/review/90330cc7630e.prompt.md",
+    "score": "eval/r3/review/90330cc7630e.score.json"
+  },
+  {
+    "id": "b971309f1b94",
+    "run": "nonrd-pricing/BLIND/pre_deliver",
+    "scenario": "nonrd-pricing",
+    "condition": "BLIND",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-pricing/BLIND/pre_deliver.md",
+    "prompt": "eval/r3/review/b971309f1b94.prompt.md",
+    "score": "eval/r3/review/b971309f1b94.score.json"
+  },
+  {
+    "id": "81a714002e15",
+    "run": "nonrd-pricing/BLIND/pre_task",
+    "scenario": "nonrd-pricing",
+    "condition": "BLIND",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/BLIND/pre_task.md",
+    "prompt": "eval/r3/review/81a714002e15.prompt.md",
+    "score": "eval/r3/review/81a714002e15.score.json"
+  },
+  {
+    "id": "e59820acbd1c",
+    "run": "nonrd-pricing/OPEN/post_task",
+    "scenario": "nonrd-pricing",
+    "condition": "OPEN",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/OPEN/post_task.md",
+    "prompt": "eval/r3/review/e59820acbd1c.prompt.md",
+    "score": "eval/r3/review/e59820acbd1c.score.json"
+  },
+  {
+    "id": "5e3ca57d3bf1",
+    "run": "nonrd-pricing/OPEN/pre_deliver",
+    "scenario": "nonrd-pricing",
+    "condition": "OPEN",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/nonrd-pricing/OPEN/pre_deliver.md",
+    "prompt": "eval/r3/review/5e3ca57d3bf1.prompt.md",
+    "score": "eval/r3/review/5e3ca57d3bf1.score.json"
+  },
+  {
+    "id": "f9c8e7ed2ff8",
+    "run": "nonrd-pricing/OPEN/pre_task",
+    "scenario": "nonrd-pricing",
+    "condition": "OPEN",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/nonrd-pricing/OPEN/pre_task.md",
+    "prompt": "eval/r3/review/f9c8e7ed2ff8.prompt.md",
+    "score": "eval/r3/review/f9c8e7ed2ff8.score.json"
+  },
+  {
+    "id": "decf9b26bd00",
+    "run": "rd-recall/BASE/post_task",
+    "scenario": "rd-recall",
+    "condition": "BASE",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-recall/BASE/post_task.md",
+    "prompt": "eval/r3/review/decf9b26bd00.prompt.md",
+    "score": "eval/r3/review/decf9b26bd00.score.json"
+  },
+  {
+    "id": "f6b481520421",
+    "run": "rd-recall/BASE/pre_deliver",
+    "scenario": "rd-recall",
+    "condition": "BASE",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-recall/BASE/pre_deliver.md",
+    "prompt": "eval/r3/review/f6b481520421.prompt.md",
+    "score": "eval/r3/review/f6b481520421.score.json"
+  },
+  {
+    "id": "7a76c5f61a0f",
+    "run": "rd-recall/BASE/pre_task",
+    "scenario": "rd-recall",
+    "condition": "BASE",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-recall/BASE/pre_task.md",
+    "prompt": "eval/r3/review/7a76c5f61a0f.prompt.md",
+    "score": "eval/r3/review/7a76c5f61a0f.score.json"
+  },
+  {
+    "id": "e5a5ebfb1f58",
+    "run": "rd-recall/BLIND/post_task",
+    "scenario": "rd-recall",
+    "condition": "BLIND",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-recall/BLIND/post_task.md",
+    "prompt": "eval/r3/review/e5a5ebfb1f58.prompt.md",
+    "score": "eval/r3/review/e5a5ebfb1f58.score.json"
+  },
+  {
+    "id": "3742806e1965",
+    "run": "rd-recall/BLIND/pre_deliver",
+    "scenario": "rd-recall",
+    "condition": "BLIND",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-recall/BLIND/pre_deliver.md",
+    "prompt": "eval/r3/review/3742806e1965.prompt.md",
+    "score": "eval/r3/review/3742806e1965.score.json"
+  },
+  {
+    "id": "8ef95e9c6979",
+    "run": "rd-recall/BLIND/pre_task",
+    "scenario": "rd-recall",
+    "condition": "BLIND",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-recall/BLIND/pre_task.md",
+    "prompt": "eval/r3/review/8ef95e9c6979.prompt.md",
+    "score": "eval/r3/review/8ef95e9c6979.score.json"
+  },
+  {
+    "id": "dbe2989cb9f2",
+    "run": "rd-recall/OPEN/post_task",
+    "scenario": "rd-recall",
+    "condition": "OPEN",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-recall/OPEN/post_task.md",
+    "prompt": "eval/r3/review/dbe2989cb9f2.prompt.md",
+    "score": "eval/r3/review/dbe2989cb9f2.score.json"
+  },
+  {
+    "id": "19692cf013ed",
+    "run": "rd-recall/OPEN/pre_deliver",
+    "scenario": "rd-recall",
+    "condition": "OPEN",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-recall/OPEN/pre_deliver.md",
+    "prompt": "eval/r3/review/19692cf013ed.prompt.md",
+    "score": "eval/r3/review/19692cf013ed.score.json"
+  },
+  {
+    "id": "75097224e0bf",
+    "run": "rd-recall/OPEN/pre_task",
+    "scenario": "rd-recall",
+    "condition": "OPEN",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-recall/OPEN/pre_task.md",
+    "prompt": "eval/r3/review/75097224e0bf.prompt.md",
+    "score": "eval/r3/review/75097224e0bf.score.json"
+  },
+  {
+    "id": "b8217ba09074",
+    "run": "rd-thermal/BASE/post_task",
+    "scenario": "rd-thermal",
+    "condition": "BASE",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-thermal/BASE/post_task.md",
+    "prompt": "eval/r3/review/b8217ba09074.prompt.md",
+    "score": "eval/r3/review/b8217ba09074.score.json"
+  },
+  {
+    "id": "5f2973f26ca1",
+    "run": "rd-thermal/BASE/pre_deliver",
+    "scenario": "rd-thermal",
+    "condition": "BASE",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-thermal/BASE/pre_deliver.md",
+    "prompt": "eval/r3/review/5f2973f26ca1.prompt.md",
+    "score": "eval/r3/review/5f2973f26ca1.score.json"
+  },
+  {
+    "id": "6b154a2603c5",
+    "run": "rd-thermal/BASE/pre_task",
+    "scenario": "rd-thermal",
+    "condition": "BASE",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-thermal/BASE/pre_task.md",
+    "prompt": "eval/r3/review/6b154a2603c5.prompt.md",
+    "score": "eval/r3/review/6b154a2603c5.score.json"
+  },
+  {
+    "id": "db4cc4fb5a31",
+    "run": "rd-thermal/BLIND/post_task",
+    "scenario": "rd-thermal",
+    "condition": "BLIND",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-thermal/BLIND/post_task.md",
+    "prompt": "eval/r3/review/db4cc4fb5a31.prompt.md",
+    "score": "eval/r3/review/db4cc4fb5a31.score.json"
+  },
+  {
+    "id": "37d65971f2dd",
+    "run": "rd-thermal/BLIND/pre_deliver",
+    "scenario": "rd-thermal",
+    "condition": "BLIND",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-thermal/BLIND/pre_deliver.md",
+    "prompt": "eval/r3/review/37d65971f2dd.prompt.md",
+    "score": "eval/r3/review/37d65971f2dd.score.json"
+  },
+  {
+    "id": "d0db510703a6",
+    "run": "rd-thermal/BLIND/pre_task",
+    "scenario": "rd-thermal",
+    "condition": "BLIND",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-thermal/BLIND/pre_task.md",
+    "prompt": "eval/r3/review/d0db510703a6.prompt.md",
+    "score": "eval/r3/review/d0db510703a6.score.json"
+  },
+  {
+    "id": "d959ee8ae845",
+    "run": "rd-thermal/OPEN/post_task",
+    "scenario": "rd-thermal",
+    "condition": "OPEN",
+    "stage": "post_task",
+    "artifact": "eval/r3/runs/rd-thermal/OPEN/post_task.md",
+    "prompt": "eval/r3/review/d959ee8ae845.prompt.md",
+    "score": "eval/r3/review/d959ee8ae845.score.json"
+  },
+  {
+    "id": "aa219584a8da",
+    "run": "rd-thermal/OPEN/pre_deliver",
+    "scenario": "rd-thermal",
+    "condition": "OPEN",
+    "stage": "pre_deliver",
+    "artifact": "eval/r3/runs/rd-thermal/OPEN/pre_deliver.md",
+    "prompt": "eval/r3/review/aa219584a8da.prompt.md",
+    "score": "eval/r3/review/aa219584a8da.score.json"
+  },
+  {
+    "id": "0c31e592b267",
+    "run": "rd-thermal/OPEN/pre_task",
+    "scenario": "rd-thermal",
+    "condition": "OPEN",
+    "stage": "pre_task",
+    "artifact": "eval/r3/runs/rd-thermal/OPEN/pre_task.md",
+    "prompt": "eval/r3/review/0c31e592b267.prompt.md",
+    "score": "eval/r3/review/0c31e592b267.score.json"
+  }
+]

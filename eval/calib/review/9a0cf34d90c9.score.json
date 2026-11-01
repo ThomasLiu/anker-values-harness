@@ -1,0 +1,32 @@
+{
+  "artifact_type": "沉淀记录",
+  "first_principles": {
+    "score": 2,
+    "passed": ["F1", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "12 万台备货，实际只卖出 6.8 万台，库存周转从计划的 45 天变成 96 天",
+    "gap": "沉淀记录只评 F1 与 F4，两项均过记 2 分，无 3 分档。唯一瑕疵：8 万美元仓储费无计算式也无来源标注，属未标注的断言，F1 判过偏勉强。"
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": 3,
+    "passed": ["C1", "C2", "C3", "C4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "新版强制加一列「竞品降价 10%」情景；路径 marketplace/pricing/promo-forecast.md",
+    "gap": "四项全过：模板/清单/规则三件资产都带落地路径与字段说明；去掉本项目数字后仍可用；「竞品动作那列不填不许提交」是提交门禁，改变了默认做法；三条决策均附理由。"
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": ["延后"],
+  "declaration_found": "为了 守住价格带和长期毛利 放弃了 冲类目排名，因为 排名可以靠后续广告和评论补回来……牺牲可接受的前提是：黑五前评论数达到 400 条；达不到就切限时折扣。",
+  "verdict": "可交付",
+  "top_fix": "给「多付 8 万美元仓储」补上计算式与口径（5 万台 × 单台月仓储费率 × 延后期数），并注明 12 万/6.8 万/96 天的数据来源，让撑起结论的数字从断言变成可复核的算式。"
+}

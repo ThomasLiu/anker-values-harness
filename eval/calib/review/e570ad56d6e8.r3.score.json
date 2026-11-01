@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "12 万台 / 45 天消化 70%：基于三代产品售罄率分布的估算",
+    "gap": "无不过项。可加固处：『要多卖 34% 的量才能打平』未写出 11 ÷ 79.99 档单台毛利 的算式，属承重数字里唯一未显式推导的一项。"
+  },
+  "extremeness": {
+    "score": 3,
+    "passed": ["E1", "E2", "E3", "E4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "首发窗口错过黑五预热，备货节奏全盘作废",
+    "gap": "无不过项。可加固处：E2 的『作废』对象写成了『备货节奏』与『Q3 现金流计划』，没有直接写成『方案 A 不成立』。"
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": "为了 守住 79.99 美元的价格带和长期毛利 放弃了 首发期的类目排名冲刺，因为 排名可以靠后续评论和广告补，价格带一旦下去很难回来。牺牲可接受的前提是：首月评论数不低于 150 条；低于这个数就切方案 D 的限时折扣。",
+  "verdict": "可交付",
+  "top_fix": "在『为什么选 A』里给『要多卖 34% 才能打平』补一行算式（11 ÷ 79.99 档单台毛利 ≈ 34%），让这个承重数字可被复算，而不是只留结论。"
+}

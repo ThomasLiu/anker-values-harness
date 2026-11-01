@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "41.2 万台：ERP 生产入库记录，实测；失效概率 8 倍：估算，未做本批次实测",
+    "gap": null
+  },
+  "extremeness": {
+    "score": 3,
+    "passed": ["E1", "E2", "E3", "E4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "整个方案的证据基础就崩了；召回公告一旦发布即不可逆",
+    "gap": null
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": ["降级"],
+  "declaration_found": "取舍声明：为了 把热失控这个不可逆风险清零 放弃了 3.9 亿元现金和 Q3 的部分营收，因为 一旦在用户家中起火，代价不是钱能衡量的；牺牲可接受的前提是：根因确认在电芯侧",
+  "verdict": "可交付",
+  "top_fix": "把 60 颗电芯加速测试从「公告后」提到「公告前」，至少先出对照组的初步结论再发公告；若监管窗口确实等不起，就在公告口径里明确「根因待确认、测试结果 48 小时内补充」，不要用已完成验证的语气写结论。"
+}

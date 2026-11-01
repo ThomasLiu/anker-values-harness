@@ -1,0 +1,32 @@
+{
+  "artifact_type": "拆解卡",
+  "first_principles": {
+    "score": 2,
+    "passed": ["F2", "F3", "F4"],
+    "failed": ["F1"],
+    "cap_applied": null,
+    "evidence": "认证：二供电芯必须重做整机认证，单型号 6-8 周；资金：二供首单预付 30%，占用现金流约 1200 万元",
+    "gap": "F1 不过：6-8 周认证周期、1200 万预付、5 个月过渡期均为凭空断言，无实测、无计算式、无引用来源，也未标注为估算；只有 8.2→7.6 元可追到采购原话"
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "可交付",
+  "top_fix": "给硬约束段的三个数字补出处：6-8 周认证改为引用上一款电芯二供导入的实际认证排期（项目名+起止日期），1200 万预付写成计算式（单价×首单量×30%），5 个月过渡期标注新国标条款号与截止日。"
+}

@@ -173,12 +173,12 @@ def _print_critic(rep):
 def cmd_report(args):
     cfg = _load(args)
     if args.export:
-        n = tel.export(cfg.root, Path(args.export))
+        n = tel.export(cfg.root, Path(args.export), include_all=args.all)
         print(f"已导出 {n} 条记录 -> {args.export}")
         return 0
 
     src = Path(args.source).expanduser() if args.source else None
-    rep = tel.report(cfg.root, source=src)
+    rep = tel.report(cfg.root, source=src, rules=cfg.rules())
     if args.json:
         print(json.dumps(rep, ensure_ascii=False, indent=2))
         return 0
@@ -189,10 +189,32 @@ def cmd_report(args):
     if rep["runs"]:
         print("\n各阶段通过率：")
         for sid, st in rep["by_stage"].items():
-            print(f"  {sid:12s} {st['passed']}/{st['runs']}  {st['pass_rate']*100:5.1f}%")
+            fa = rep["by_artifact"].get(sid, {})
+            print(
+                f"  {sid:12s} "
+                f"首次 {fa.get('first_passed', 0):2d}/{fa.get('first_runs', 0):2d} "
+                f"{fa.get('first_pass_rate', 0) * 100:5.1f}%   "
+                f"最终 {fa.get('passed', 0):2d}/{fa.get('artifacts', 0):2d} "
+                f"{fa.get('final_pass_rate', 0) * 100:5.1f}%   "
+                f"返工 {fa.get('rework', 0)} 份"
+            )
         print("\n最常被拦的规则：")
         for row in rep["rule_fails"][:8]:
             print(f"  {row['fails']:3d} 次  {row['rule']}")
+
+        health = rep.get("rule_health") or []
+        if health:
+            print("\n规则健康（触发 = 被真正评估过，跳过 = 触发条件没命中）：")
+            print("  规则                         级别      触发  失败  跳过   失败率")
+            for h in health:
+                if not h["runs"]:
+                    rate = "从未触发"
+                else:
+                    rate = f"{h['fail_rate'] * 100:.0f}%"
+                print(
+                    f"  {h['rule']:<28s} {h['severity']:<8s} {h['runs']:>4d} "
+                    f"{h['fails']:>5d} {h['skipped']:>5d}   {rate}"
+                )
         if rep["recent_failures"]:
             print("\n最近失败：")
             for r in rep["recent_failures"]:
@@ -388,6 +410,7 @@ def main(argv=None):
     s.add_argument("--json", action="store_true")
     s.add_argument("--from", dest="source", help="从归档文件读取，如 eval/telemetry/r2.jsonl")
     s.add_argument("--export", help="把当前 telemetry 归档到指定路径")
+    s.add_argument("--all", action="store_true", help="归档时保留临时目录的记录（默认剔除）")
     s.set_defaults(func=cmd_report)
 
     s = sub.add_parser("critique", help="渲染独立 critic 的评审 prompt，或回收评分")

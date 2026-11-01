@@ -1,0 +1,32 @@
+{
+  "artifact_type": "拆解卡",
+  "first_principles": {
+    "score": 2,
+    "passed": ["F2", "F3", "F4"],
+    "failed": ["F1"],
+    "cap_applied": null,
+    "evidence": "已生产的 8000 台进入渠道；改模一次 ≥12 万元，交期 +3 周",
+    "gap": "F1 不过：8000 台在制/已产量与 12 万元改模成本、+3 周交期均无实测、计算式、引用来源或「估算」标注，属凭空断言；F2 三条假设均有验证动作，F3 本卡未给建议方案自动通过，F4 承重句无不可证伪措辞。"
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "可交付",
+  "top_fix": "给两个承重数字补出处：8000 台标注来源（ERP 在制工单号或出货计划批次），12 万元/+3 周标注模具厂报价单编号，拿不到就明确写「估算，误差 ±20%」。"
+}

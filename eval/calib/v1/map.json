@@ -1,0 +1,122 @@
+[
+  {
+    "id": "867814ebee3a",
+    "path": "bench/positive/pre_task-rd-thermal.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/867814ebee3a.prompt.md",
+    "score": "eval/calib/review/867814ebee3a.score.json"
+  },
+  {
+    "id": "7f92fbf9afda",
+    "path": "bench/positive/pre_task-nonrd-cell-second-source.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/7f92fbf9afda.prompt.md",
+    "score": "eval/calib/review/7f92fbf9afda.score.json"
+  },
+  {
+    "id": "bed89d50afcb",
+    "path": "bench/positive/pre_deliver-rd-recall.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/bed89d50afcb.prompt.md",
+    "score": "eval/calib/review/bed89d50afcb.score.json"
+  },
+  {
+    "id": "e570ad56d6e8",
+    "path": "bench/positive/pre_deliver-nonrd-pricing.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/e570ad56d6e8.prompt.md",
+    "score": "eval/calib/review/e570ad56d6e8.score.json"
+  },
+  {
+    "id": "196a4dd3af18",
+    "path": "bench/positive/post_task-rd-recall-review.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/196a4dd3af18.prompt.md",
+    "score": "eval/calib/review/196a4dd3af18.score.json"
+  },
+  {
+    "id": "9a0cf34d90c9",
+    "path": "bench/positive/post_task-nonrd-promo-review.md",
+    "kind": "pos",
+    "expect": {},
+    "why": "三条价值观都应 ≥2",
+    "prompt": "eval/calib/review/9a0cf34d90c9.prompt.md",
+    "score": "eval/calib/review/9a0cf34d90c9.score.json"
+  },
+  {
+    "id": "a381791bb24f",
+    "path": "bench/negative/pre_deliver-rd-no-blast.md",
+    "kind": "neg",
+    "expect": {
+      "extremeness": 1
+    },
+    "why": "soundcore 固件全量推送属不可逆对外动作，全文没有影响范围。critic.md：这类产出求极致 0 分，不给部分分",
+    "prompt": "eval/calib/review/a381791bb24f.prompt.md",
+    "score": "eval/calib/review/a381791bb24f.score.json"
+  },
+  {
+    "id": "c77ac634af08",
+    "path": "bench/negative/pre_deliver-rd-weak-redteam.md",
+    "kind": "neg",
+    "expect": {
+      "extremeness": 1
+    },
+    "why": "红队自查只写 2 条且都是无害表述。critic.md：红队列的是免责声明 → 1 分",
+    "prompt": "eval/calib/review/c77ac634af08.prompt.md",
+    "score": "eval/calib/review/c77ac634af08.score.json"
+  },
+  {
+    "id": "73bd6cb906c6",
+    "path": "bench/negative/pre_deliver-rd-single-option.md",
+    "kind": "neg",
+    "expect": {
+      "first_principles": 1
+    },
+    "why": "召回方案只给一个选项没有对照。critic.md：只有一条路没有对照 → 最多 1 分",
+    "prompt": "eval/calib/review/73bd6cb906c6.prompt.md",
+    "score": "eval/calib/review/73bd6cb906c6.score.json"
+  },
+  {
+    "id": "3b42f51084e4",
+    "path": "bench/negative/pre_task-rd-hedge.md",
+    "kind": "neg",
+    "expect": {
+      "first_principles": 1
+    },
+    "why": "假设写成「大概/应该」。critic.md：假设不可证伪 → 1 分",
+    "prompt": "eval/calib/review/3b42f51084e4.prompt.md",
+    "score": "eval/calib/review/3b42f51084e4.score.json"
+  },
+  {
+    "id": "9e0ffd24a4b8",
+    "path": "bench/negative/post_task-rd-empty.md",
+    "kind": "neg",
+    "expect": {
+      "co_growth": 1
+    },
+    "why": "复盘只有感受与打算，没有可加载资产。critic.md：只有感想没有可加载的东西 → 0 分",
+    "prompt": "eval/calib/review/9e0ffd24a4b8.prompt.md",
+    "score": "eval/calib/review/9e0ffd24a4b8.score.json"
+  },
+  {
+    "id": "dd3ffc85a860",
+    "path": "bench/negative/pre_deliver-rd-silent-downgrade.md",
+    "kind": "neg",
+    "expect": {
+      "silent_downgrade": null
+    },
+    "why": "砍掉云端存储但没写取舍声明。critic.md：附加检查判 silent_downgrade = true",
+    "prompt": "eval/calib/review/dd3ffc85a860.prompt.md",
+    "score": "eval/calib/review/dd3ffc85a860.score.json"
+  }
+]

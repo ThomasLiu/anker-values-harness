@@ -1,0 +1,110 @@
+[
+  {
+    "run": "rd-recall/BASE",
+    "scenario": "rd-recall",
+    "condition": "BASE",
+    "title": "移动电源批次召回决策",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-recall/BASE",
+    "repo_dir": "eval/r3/runs/rd-recall/BASE"
+  },
+  {
+    "run": "rd-recall/OPEN",
+    "scenario": "rd-recall",
+    "condition": "OPEN",
+    "title": "移动电源批次召回决策",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-recall/OPEN",
+    "repo_dir": "eval/r3/runs/rd-recall/OPEN"
+  },
+  {
+    "run": "rd-recall/BLIND",
+    "scenario": "rd-recall",
+    "condition": "BLIND",
+    "title": "移动电源批次召回决策",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-recall/BLIND",
+    "repo_dir": "eval/r3/runs/rd-recall/BLIND"
+  },
+  {
+    "run": "rd-thermal/BASE",
+    "scenario": "rd-thermal",
+    "condition": "BASE",
+    "title": "65W GaN 充电器温升超规格，能不能出货",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-thermal/BASE",
+    "repo_dir": "eval/r3/runs/rd-thermal/BASE"
+  },
+  {
+    "run": "rd-thermal/OPEN",
+    "scenario": "rd-thermal",
+    "condition": "OPEN",
+    "title": "65W GaN 充电器温升超规格，能不能出货",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-thermal/OPEN",
+    "repo_dir": "eval/r3/runs/rd-thermal/OPEN"
+  },
+  {
+    "run": "rd-thermal/BLIND",
+    "scenario": "rd-thermal",
+    "condition": "BLIND",
+    "title": "65W GaN 充电器温升超规格，能不能出货",
+    "role": "研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/rd-thermal/BLIND",
+    "repo_dir": "eval/r3/runs/rd-thermal/BLIND"
+  },
+  {
+    "run": "nonrd-pricing/BASE",
+    "scenario": "nonrd-pricing",
+    "condition": "BASE",
+    "title": "北美站新品首发定价与备货",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-pricing/BASE",
+    "repo_dir": "eval/r3/runs/nonrd-pricing/BASE"
+  },
+  {
+    "run": "nonrd-pricing/OPEN",
+    "scenario": "nonrd-pricing",
+    "condition": "OPEN",
+    "title": "北美站新品首发定价与备货",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-pricing/OPEN",
+    "repo_dir": "eval/r3/runs/nonrd-pricing/OPEN"
+  },
+  {
+    "run": "nonrd-pricing/BLIND",
+    "scenario": "nonrd-pricing",
+    "condition": "BLIND",
+    "title": "北美站新品首发定价与备货",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-pricing/BLIND",
+    "repo_dir": "eval/r3/runs/nonrd-pricing/BLIND"
+  },
+  {
+    "run": "nonrd-cell-source/BASE",
+    "scenario": "nonrd-cell-source",
+    "condition": "BASE",
+    "title": "电芯二供导入，要不要顺带压价",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-cell-source/BASE",
+    "repo_dir": "eval/r3/runs/nonrd-cell-source/BASE"
+  },
+  {
+    "run": "nonrd-cell-source/OPEN",
+    "scenario": "nonrd-cell-source",
+    "condition": "OPEN",
+    "title": "电芯二供导入，要不要顺带压价",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-cell-source/OPEN",
+    "repo_dir": "eval/r3/runs/nonrd-cell-source/OPEN"
+  },
+  {
+    "run": "nonrd-cell-source/BLIND",
+    "scenario": "nonrd-cell-source",
+    "condition": "BLIND",
+    "title": "电芯二供导入，要不要顺带压价",
+    "role": "非研发",
+    "lab_dir": "/Users/thomas/Projects/vh-r3-lab/nonrd-cell-source/BLIND",
+    "repo_dir": "eval/r3/runs/nonrd-cell-source/BLIND"
+  }
+]

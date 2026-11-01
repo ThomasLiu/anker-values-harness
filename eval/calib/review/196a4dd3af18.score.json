@@ -1,0 +1,32 @@
+{
+  "artifact_type": "沉淀记录",
+  "first_principles": {
+    "score": 2,
+    "passed": ["F1", "F4"],
+    "failed": [],
+    "cap_applied": "沉淀记录只评 F1/F4，两项全过记 2（该类产出无 3 分）",
+    "evidence": "召回在 11 天内完成 78%，比计划慢 4 天",
+    "gap": null
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": 3,
+    "passed": ["C1", "C2", "C3", "C4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "从 quality/recall/72h-checklist.md 第一项开始，不要先开内部会",
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": ["简化"],
+  "declaration_found": "为了 抢在监管窗口期内完成备案 放弃了 先拿到加速测试结论再公告，因为 窗口错过要再等一个季度；牺牲可接受的前提是：测试在公告后 48 小时内出结果",
+  "verdict": "可交付",
+  "top_fix": "取舍声明只覆盖了「不等 60 颗测试就公告」，没覆盖正文自述的「312 条客诉复核简化为关键词过滤」——把该条简化也补进同一段声明，写明放弃对象（人工复核覆盖率）、理由（72 小时公告窗口）、可接受前提（漏检工单在 X 天内由抽检补回，否则回溯批次判断）。"
+}

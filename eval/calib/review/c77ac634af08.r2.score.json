@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "1200 元换机成本：售后部门口径，实测；600 / 800 流明：样机实测",
+    "gap": "四项全过：三个承重数字均有出处，两条假设均带验证动作，A/B/C 三条路径均写了不选的理由，结论句无可证伪措辞。"
+  },
+  "extremeness": {
+    "score": 0,
+    "passed": ["E2"],
+    "failed": ["E1", "E3", "E4"],
+    "cap_applied": "E3 不过，封顶 0",
+    "evidence": "如果光衰根因是散热设计……这条会让整个方案作废",
+    "gap": "E1：红队只有 2 条，不足 3 条；E3：影响范围写了影响对象、最坏后果、能否回滚，但缺范围量级（涉及机型数/推送台数/金额），且固件推送属不可逆对外动作，缺项不给部分分；E4：全文无「一旦……就停/退/切换」类触发条件，「补救方式」是事后动作不是止损条件。"
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "不可交付",
+  "top_fix": "在「影响范围」补上范围量级：写明涉及机型数量、固件推送台数与最坏情况下的预估售后/召回金额，把 E3 的四要素补全。"
+}

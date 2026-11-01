@@ -1,0 +1,32 @@
+{
+  "artifact_type": "拆解卡",
+  "first_principles": {
+    "score": 1,
+    "passed": ["F2", "F3"],
+    "failed": ["F1", "F4"],
+    "cap_applied": null,
+    "evidence": "依据：投影行业普遍用「峰值亮度」标称，用户用照度计测的是「屏幕平均亮度」，两者本来就差 30% 以上",
+    "gap": "F1 不过：「差 30% 以上」是承重判断，全文没给实测、计算式、引用来源，也没标注为估算，属凭空断言；F4 不过：承重假设句里出现「大概在 500-600 流明」「应该是可比的」这类不可证伪措辞。"
+  },
+  "extremeness": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "需返工",
+  "top_fix": "给「两者本来就差 30% 以上」补出处：用一台样机按同一套方法实测峰值亮度与屏幕平均亮度，把差值写成实测数字而不是「以上」，并去掉同句的「大概/应该」，一处同时救 F1 与 F4。"
+}

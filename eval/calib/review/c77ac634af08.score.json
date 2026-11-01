@@ -1,0 +1,32 @@
+{
+  "artifact_type": "交付稿",
+  "first_principles": {
+    "score": 3,
+    "passed": ["F1", "F2", "F3", "F4"],
+    "failed": [],
+    "cap_applied": null,
+    "evidence": "一次换机成本约 1200 元，而噪音投诉多数停留在评论层面",
+    "gap": null
+  },
+  "extremeness": {
+    "score": 0,
+    "passed": ["E2"],
+    "failed": ["E1", "E3", "E4"],
+    "cap_applied": "E3 不过，封顶 0",
+    "evidence": "这条会让整个方案作废。",
+    "gap": "E1 红队只有 2 条，未达 3 条；E3 影响范围写了对象、最坏后果、不可回滚，但没写范围量级（推送台数/受影响机型数/投诉量）；E4 全文没有任何「一旦…就停/退/切换」的止损或切换条件，红队里的「如果」只是后果描述，不是触发阈值"
+  },
+  "co_growth": {
+    "score": null,
+    "passed": [],
+    "failed": [],
+    "cap_applied": "不适用",
+    "evidence": null,
+    "gap": null
+  },
+  "silent_downgrade": false,
+  "downgrade_terms_found": [],
+  "declaration_found": null,
+  "verdict": "不可交付",
+  "top_fix": "在「影响范围」里补上范围量级：写清本版固件预计推送的台数与受影响机型、预估投诉量级，并据此给出能否承受的判断，让 E3 的四要素齐全。"
+}
