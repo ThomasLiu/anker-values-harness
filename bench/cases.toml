@@ -55,3 +55,33 @@ stage = "post_task"
 file = "bench/negative/post_task-empty.md"
 expect = "fail"
 expect_rules = ["cg.asset"]
+
+# 以下三条来自第一轮 A/B 实测暴露的逃逸路径，加进来防止回退
+
+[[case]]
+name = "neg/pre_deliver-blast-escape"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-blast-escape.md"
+expect = "fail"
+expect_rules = ["ex.blast-radius"]
+
+[[case]]
+name = "neg/pre_task-hedge"
+stage = "pre_task"
+file = "bench/negative/pre_task-hedge.md"
+expect = "fail"
+expect_rules = ["fp.assumption-falsifiable"]
+
+[[case]]
+name = "neg/pre_deliver-weak-redteam"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-weak-redteam.md"
+expect = "fail"
+expect_rules = ["ex.redteam"]
+
+[[case]]
+name = "neg/pre_deliver-no-provenance"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-no-provenance.md"
+expect = "fail"
+expect_rules = ["fp.number-provenance"]

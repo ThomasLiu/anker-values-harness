@@ -76,6 +76,18 @@ min_items = 2
 item_requires_any = ["验证", "怎么验", "如何验", "校验"]
 
 [[values.rules]]
+id = "fp.assumption-falsifiable"
+stage = ["pre_task", "pre_deliver"]
+severity = "blocking"
+statement = "关键假设里不得出现「应该 / 可能 / 大概 / 或许」这类不可证伪的表述"
+why = "「客户可能对价格敏感」不是假设，是还没想清楚。不可证伪的假设永远是对的，也就永远没用。"
+fix = "把「可能」换成具体判断，并写出什么结果会推翻它"
+check = "forbid_pattern_in_section"
+[values.rules.params]
+sections = ["关键假设", "假设", "前提假设"]
+patterns = ["应该", "可能", "大概", "或许", "大概率", "估计", "说不定", "差不多"]
+
+[[values.rules]]
 id = "fp.no-convention-appeal"
 stage = ["pre_deliver"]
 severity = "blocking"
@@ -86,6 +98,24 @@ check = "forbid_pattern_without_reason"
 [values.rules.params]
 patterns = ["行业惯例", "行业标准做法", "常规做法", "通常这么做", "大家都这样", "参考上次", "以前一直", "竞品也这么", "业内都是"]
 reason_markers = ["因为", "理由是", "原理", "依据", "数据", "测算", "所以", "由于"]
+# 只有「用惯例支撑决策」才违规。纯描述性引用（「行业惯例的周期是 3 个月，
+# 本批只跑 7 天」）不算——那是在陈述背景，不是在做决定。
+decision_markers = ["所以", "因此", "建议", "采用", "我们定", "就定", "报价", "沿用", "照搬", "按", "决定", "直接"]
+
+[[values.rules]]
+id = "fp.number-provenance"
+stage = ["pre_deliver"]
+severity = "blocking"
+statement = "出现 ≥3 个数字结论时，必须声明数据来源或标注为估算"
+why = "四组盲评里最普遍的缺陷：结论的确定度远高于证据强度。精确的算术不等于可靠的依据——用编造的数字算出小数点后的结论，比不做测算更危险。"
+fix = "加一段 `## 数据来源`，逐条说明：哪些是实测、哪些是估算、哪些是假设值"
+check = "require_when_pattern"
+[values.rules.params]
+trigger = ["%", "万", "元", "pt", "个点"]
+min_hits = 3
+negation_markers = []
+require_section = ["数据来源", "数据口径", "口径", "估算说明"]
+require_pattern = []
 
 [[values.rules]]
 id = "fp.alternatives"
@@ -126,13 +156,14 @@ item_requires_any = ["通过", "判据", "≥", "≤", ">", "<", "=", "不超过
 id = "ex.redteam"
 stage = ["pre_deliver"]
 severity = "blocking"
-statement = "交付前必须做红队自查，找出自己方案的 ≥3 个致命弱点"
-why = "自己找不到弱点，说明找得不够狠，不是说明没有弱点。"
-fix = "加一段 `## 红队自查`，列 ≥3 条「如果我错了，最可能是错在哪」"
+statement = "交付前必须做红队自查，找出自己方案的 ≥3 个致命弱点，每条都要说清「如果成立，什么会废掉」"
+why = "自己找不到弱点，说明找得不够狠，不是说明没有弱点。只数条数的红队自查，是给自己发的免责声明。"
+fix = "加一段 `## 红队自查`，列 ≥3 条，每条必须写出这条假设成立时方案哪里会崩（作废/失效/推翻/重做）"
 check = "require_section"
 [values.rules.params]
 sections = ["红队自查", "自我批判", "风险自查", "弱点自查"]
 min_items = 3
+item_requires_any = ["作废", "崩", "失效", "推翻", "削弱", "排除", "重做", "重来", "不可用", "归零", "白做", "无意义", "不成立", "废掉", "全盘", "推倒", "垮", "掉"]
 
 [[values.rules]]
 id = "ex.blast-radius"
@@ -143,7 +174,9 @@ why = "「顶着巨大风险」指的是做别人不敢做的判断，不是做�
 fix = "加一段 `## 影响范围`：谁会看到、能否撤回、最坏后果、补救方式"
 check = "require_when_pattern"
 [values.rules.params]
-trigger = ["发布", "上线", "推送", "发送", "群发", "提交", "删除", "付款", "下单", "部署", "对外", "deploy", "publish", "push", "delete"]
+trigger = ["发送", "群发", "发出", "发给", "外发", "发布", "上线", "提交", "删除", "付款", "下单", "推送", "部署", "签约", "承诺", "公开", "deploy", "publish", "push", "delete"]
+# 「不外发」「尚未发送」「无需部署」不是动作，不能触发检查
+negation_markers = ["不", "禁止", "避免", "无需", "尚未", "未", "别", "勿", "不得", "没有"]
 require_section = ["影响范围", "爆炸半径", "不可逆检查", "回滚"]
 require_pattern = []
 
@@ -156,7 +189,8 @@ why = "为了通过当前 gate 而写死特例，就是在给未来的自己制�
 fix = "在文末加 `## 技术债`，写清：欠了什么、为什么现在不还、什么时候还"
 check = "require_when_pattern"
 [values.rules.params]
-trigger = ["写死", "硬编码", "hardcode", "临时方案", "先这样", "特例", "暂时"]
+trigger = ["写死", "硬编码", "hardcode", "临时方案", "先这样", "特例", "暂时", "草稿", "占位", "待定", "TODO", "先用"]
+negation_markers = ["不", "无", "没有", "未"]
 require_section = ["技术债", "待还", "遗留问题"]
 require_pattern = []
 
@@ -204,7 +238,8 @@ why = "静默降级是最贵的债：它不会报错，只会在半年后以事�
 fix = "加一行 `取舍声明：为了 X 放弃了 Y，因为 Z`"
 check = "require_when_pattern"
 [values.rules.params]
-trigger = ["简化", "跳过", "暂不", "降低", "不做", "省略", "砍掉", "没做"]
+trigger = ["简化", "跳过", "暂不", "降低", "不做", "省略", "砍掉", "没做", "粗略", "大概", "降级", "妥协", "折中", "次优", "未覆盖", "部分完成", "退而"]
+negation_markers = []
 require_section = []
 require_pattern = ["取舍声明"]
 
@@ -227,6 +262,7 @@ why = "取舍被说出来，是价值观在起作用；取舍被藏起来，就�
 fix = "加一行 `取舍声明：为了 X 放弃了 Y，因为 Z`，并说明为什么这个牺牲是可接受的"
 check = "require_when_pattern"
 [values.rules.params]
-trigger = ["简化", "跳过", "暂不", "降低", "不做", "省略", "砍掉", "没做", "粗略", "大概"]
+trigger = ["简化", "跳过", "暂不", "降低", "不做", "省略", "砍掉", "没做", "粗略", "大概", "降级", "妥协", "折中", "次优", "未覆盖", "部分完成", "退而"]
+negation_markers = []
 require_section = []
 require_pattern = ["取舍声明"]

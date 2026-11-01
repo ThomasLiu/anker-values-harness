@@ -65,12 +65,14 @@ lint 非 0 就返工。绕过一次，这套 harness 就废了。
 |---|---|---|---|---|
 | 第一性 | `fp.real-goal` | 任务前 | warning | 区分表面需求与真实目标 |
 | 第一性 | `fp.assumption-explicit` | 任务前/交付前 | blocking | 关键假设 ≥2 条，每条带验证方式 |
-| 第一性 | `fp.no-convention-appeal` | 交付前 | blocking | 禁止用「行业惯例」当理由（同行有「因为/测算/依据」则放行） |
+| 第一性 | `fp.assumption-falsifiable` | 任务前/交付前 | blocking | 假设里禁止「应该/可能/大概/或许」 |
+| 第一性 | `fp.no-convention-appeal` | 交付前 | blocking | 禁止用「行业惯例」支撑决策（有理由或纯描述则放行） |
+| 第一性 | `fp.number-provenance` | 交付前 | blocking | 数字结论 ≥3 个时必须声明来源或标注估算 |
 | 第一性 | `fp.alternatives` | 交付前 | blocking | 备选方案 ≥2 个 |
 | 求极致 | `ex.criteria-first` | 任务前 | blocking | 验收标准 ≥2 条且可判定 |
-| 求极致 | `ex.redteam` | 交付前 | blocking | 红队自查 ≥3 条致命弱点 |
-| 求极致 | `ex.blast-radius` | 交付前 | blocking | 不可逆动作必须写影响范围 |
-| 求极致 | `ex.debt` | 交付前 | warning | 写死特例必须登记技术债 |
+| 求极致 | `ex.redteam` | 交付前 | blocking | 红队自查 ≥3 条，每条要说清「如果成立什么会废掉」 |
+| 求极致 | `ex.blast-radius` | 交付前 | blocking | 不可逆动作必须写影响范围（否定句不算触发） |
+| 求极致 | `ex.debt` | 交付前 | warning | 写死/草稿/占位必须登记技术债 |
 | 共成长 | `cg.asset` | 任务后 | blocking | 沉淀必须是可加载资产，不是感想 |
 | 共成长 | `cg.decision-log` | 任务后 | warning | 决策必须记理由 |
 | 共成长 | `cg.tradeoff-declared` | 任务后 | blocking | 有降级必须声明取舍 |
@@ -109,6 +111,24 @@ scenarios/           业务场景用例
 eval/                A/B 实测记录
 docs/DESIGN.md       设计取舍与已知缺陷
 ```
+
+## 实测
+
+两轮 subagent 实验，4 个猎头业务场景，独立 critic 盲评（每条价值观 0-3 分，满分 9）：
+
+| 条件 | 合计 /36 | 第一性 | 求极致 | 共成长 | 静默降级 |
+|---|---|---|---|---|---|
+| 裸跑 | 12 | 1.00 | 0.25 | 1.75 | 3/4 份有 |
+| 带 harness（规则可见） | 24 | 1.75 | 2.50 | 1.75 | 0/4 |
+| 带 harness（盲测） | **31** | **2.25** | **3.00** | **2.50** | **0/4** |
+
+三点结论：
+
+1. **求极致从 0.25 涨到 3.00 是最大的贡献。** 裸跑时零份写红队自查、零份写影响范围——不是能力问题，是没有要求就不会主动自我否定。
+2. **规则透明会被反向利用。** 规则可见组里 4/6 个 agent 汇报「我先读了 values.toml 和检查器源码，照着写」。真实部署应把配置和业务仓库分离（`VH_ROOT` 指到仓库外），agent 只看 `vh prompt` 输出。
+3. **没解决的是「结论确定度高于证据强度」。** critic 在三个场景里独立给出同一个判断。为此加了 `fp.number-provenance`，但尚未经过新一轮验证。
+
+完整数据、被修掉的 7 个解析 bug、复现命令见 [`eval/RESULTS.md`](eval/RESULTS.md)。
 
 ## 已知边界
 

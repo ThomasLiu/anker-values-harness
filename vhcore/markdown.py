@@ -13,6 +13,10 @@ BOLD_LINE = re.compile(r"^\*\*(.+?)\*\*\s*[:：]?\s*$")
 ITEM = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(.*)$")
 TABLE_ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 TABLE_SEP = re.compile(r"^\s*\|[\s:|\-]+\|\s*$")
+# 加粗编号：`**1. xxx**` / `**方案一：xxx**` 是条目，不是标题
+BOLD_NUMBERED = re.compile(r"^(\d+[.)、]|[一二三四五六七八九十]+[、.)])")
+BOLD_LEAD = re.compile(r"^\*\*(.+?)\*\*\s*(\S.*)$")
+BOLD_HEADING_MAX = 14
 
 
 def normalize(name: str) -> str:
@@ -41,11 +45,36 @@ class Artifact:
             if m:
                 level = len(m.group(1))
                 name = m.group(2)
+                # 子标题不结束父段落：`## 备选方案` 下面用 `### 方案A` 是常见写法，
+                # 如果子标题切断段落，方案计数会变成 0。
+                # 注意只对正文段落（H2 及更深）生效——H1 是文档标题，不是段落容器。
+                if (
+                    current is not None
+                    and current["level"] >= 2
+                    and level > current["level"]
+                ):
+                    current["lines"].append(f"- {name.strip()}")
+                    continue
             else:
                 mb = BOLD_LINE.match(line)
                 if mb:
+                    inner = mb.group(1).strip()
+                    # 加粗行只有在「像标题」时才算标题。`**1. 时间**`、`**方案一：只做精筛**`
+                    # 是条目——把它们当标题会截断段落，让条目数变成 0。
+                    looks_like_item = bool(BOLD_NUMBERED.match(inner)) or len(inner) > BOLD_HEADING_MAX
+                    if looks_like_item and current is not None:
+                        current["lines"].append(f"- {inner}")
+                        continue
                     level = 7
-                    name = mb.group(1)
+                    name = inner
+                else:
+                    ml = BOLD_LEAD.match(line)
+                    # `**方案 B：……** 后面还有正文` 是最常见的条目写法，整行都是条目
+                    if ml and current is not None:
+                        current["lines"].append(
+                            f"- {ml.group(1).strip()} {ml.group(2).strip()}"
+                        )
+                        continue
             if name:
                 current = {
                     "name": name.strip(),
