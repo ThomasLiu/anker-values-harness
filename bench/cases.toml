@@ -1,0 +1,57 @@
+# 基准样本。selftest 用它验证「检查器本身」是否有效。
+#
+# 正例必须全过——否则是误报，会把合格产出打回，agent 会开始绕过 harness。
+# 反例必须被指定规则拦下——否则是漏报，harness 变成装饰品。
+
+[[case]]
+name = "pos/pre_task-good"
+stage = "pre_task"
+file = "bench/positive/pre_task-good.md"
+expect = "pass"
+
+[[case]]
+name = "pos/pre_deliver-good"
+stage = "pre_deliver"
+file = "bench/positive/pre_deliver-good.md"
+expect = "pass"
+
+[[case]]
+name = "pos/post_task-good"
+stage = "post_task"
+file = "bench/positive/post_task-good.md"
+expect = "pass"
+
+[[case]]
+name = "neg/pre_task-no-criteria"
+stage = "pre_task"
+file = "bench/negative/pre_task-no-criteria.md"
+expect = "fail"
+expect_rules = ["ex.criteria-first"]
+
+[[case]]
+name = "neg/pre_deliver-convention"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-convention.md"
+expect = "fail"
+expect_rules = ["fp.no-convention-appeal"]
+
+[[case]]
+name = "neg/pre_deliver-single-option"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-single-option.md"
+expect = "fail"
+expect_rules = ["fp.alternatives"]
+
+[[case]]
+name = "neg/pre_deliver-blast-radius"
+stage = "pre_deliver"
+file = "bench/negative/pre_deliver-blast-radius.md"
+expect = "fail"
+expect_rules = ["ex.blast-radius"]
+
+[[case]]
+name = "neg/post_task-empty"
+stage = "post_task"
+file = "bench/negative/post_task-empty.md"
+expect = "fail"
+expect_rules = ["cg.asset"]

@@ -1,0 +1,67 @@
+# 实测场景。每个场景跑两遍：裸跑 vs 带 harness，然后由独立 critic 盲评。
+# 覆盖猎头业务全链路 + 一个非业务场景（测泛化）。
+
+[[scenario]]
+id = "bd-competitor"
+title = "客户竞对分析"
+domain = "BD"
+stages = ["pre_task", "pre_deliver"]
+task = """
+我们下周要去拜访 A 客户（新能源电池，年营收 20 亿左右，正在扩算法团队）。
+他们现在有 2 家猎头在服务。BD 让我出一份竞对分析，说「先摸清楚他们现在用谁」。
+我需要在下周三之前拿到一份能在拜访里用的东西。
+"""
+
+[[scenario]]
+id = "bd-pricing"
+title = "新客户报价建议"
+domain = "BD"
+stages = ["pre_task", "pre_deliver"]
+task = """
+A 客户要签年框，让我给个费率。我们的标准是 20%，但这个是战略客户，
+BD 说可以谈到 25%。客户那边采购很强势，一直在压价。
+给我一个报价建议，我明天要发给 BD。
+"""
+
+[[scenario]]
+id = "rs-outreach"
+title = "批量触达开场文案"
+domain = "RS"
+stages = ["pre_task", "pre_deliver"]
+task = """
+我手上有一批 40 个候选人，都是 3-5 年经验的算法工程师，现在在做推荐系统。
+目标岗位是某电商公司的搜索算法岗，60-80 万。
+帮我写一套触达文案，要能提高回复率。上次发的一批回复率只有 12%。
+"""
+
+[[scenario]]
+id = "match-rank"
+title = "人岗匹配排序"
+domain = "撮合"
+stages = ["pre_task", "pre_deliver"]
+task = """
+客户给了个 JD：高级后端工程师，要求 5 年以上 Go 经验，做过高并发交易系统，
+带过 3 人以上小组，本科以上。
+我这边有 8 个候选人（信息我稍后给）。帮我排个优先级，告诉我先推谁。
+"""
+
+[[scenario]]
+id = "client-weekly"
+title = "客户周报"
+domain = "交付"
+stages = ["pre_task", "pre_deliver"]
+task = """
+每周五要给 A 客户发一份招聘进展周报。这周的情况：推了 6 个人，2 个进面试，
+1 个被拒（嫌薪资低），3 个待反馈。客户上周抱怨过我们推的人质量不行。
+帮我写这周的周报。
+"""
+
+[[scenario]]
+id = "ops-tool"
+title = "内部工具选型"
+domain = "内部"
+stages = ["pre_task", "pre_deliver"]
+task = """
+我们现在的候选人管理是靠 Excel + 微信，越来越乱。想上个轻量的 ATS。
+预算一年 2 万以内，团队 5 个人。给我个方案。
+"""
