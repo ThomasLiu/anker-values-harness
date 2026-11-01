@@ -74,8 +74,9 @@ lint 非 0 就返工。绕过一次，这套 harness 就废了。
 |---|---|
 | `CLAUDE.md` | 三阶段 SOP，Claude Code 自动读进上下文 |
 | `.claude/agents/vh-critic.md` | 独立评审 subagent，不共享主 agent 上下文 |
+| `.claude/hooks/vh-gate.py` | 可选硬门禁：写完 markdown 自动跑 lint，没过就回灌给 agent |
 
-注意 `CLAUDE.md` 是**软约束**：它让 agent 知道该跑 gate，但拦不住 agent 跳过。要变成硬门禁，得挂 hook——在 `.claude/settings.json` 里加：
+注意 `CLAUDE.md` 是**软约束**：它让 agent 知道该跑 gate，但拦不住 agent 跳过。要变成硬门禁，把 `.claude/settings.example.json` 的内容合并进 `.claude/settings.json`：
 
 ```json
 {
@@ -86,7 +87,7 @@ lint 非 0 就返工。绕过一次，这套 harness 就废了。
         "hooks": [
           {
             "type": "command",
-            "command": "python vh.py lint-all \"$CLAUDE_FILE_PATHS\" --no-log"
+            "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/vh-gate.py\""
           }
         ]
       }
@@ -94,6 +95,8 @@ lint 非 0 就返工。绕过一次，这套 harness 就废了。
   }
 }
 ```
+
+（macOS 上若没有 `python` 命令，改成 `python3`。）
 
 默认**没有**装这个 hook。原因是它会对每一次文件写入触发，轻任务上纯属噪音——DESIGN.md 里写过，「给每个任务都套全套 gate 的后果是 harness 被关掉」。等三阶段流程跑顺了再考虑上硬门禁。
 
